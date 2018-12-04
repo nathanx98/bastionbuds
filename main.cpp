@@ -17,4 +17,5 @@ int main() {
     cout << "leave isValid: " << commands.at(1)->isValid("lol") << endl;
     cout << "leave execute: " << commands.at(1)->execute("lol", "no") << endl;
     return 0;
+    
 }
