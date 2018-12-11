@@ -4,6 +4,7 @@ using namespace std;
 
 class Command {
 public:
+    string commandSyntax = "";
     /*
      * @param   command the message sent by a user
      * @return  true if the message's first word matches this command and false otherwise.
@@ -32,13 +33,16 @@ public:
 
 class Join: public Command {
 public:
+
+    string commandSyntax = "/JOIN";
     bool matches(string message) override {
-        // mock
-        return true;
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message) override {
-        //mock
-        return false;
+        string firstWord = message.substr(0, message.find(" "));
+        string secondWord = message.substr(message.find(" "), message.length());
+        return ((firstWord.compare(commandSyntax) == 0) && (secondWord.compare("") != 0 ));
     }
     string execute(string message, string sender) override {
         //mock
@@ -49,12 +53,12 @@ Join join = Join();
 
 class Leave: public Command {
 public:
+    string commandSyntax = "/LEAVE";
     bool matches(string message) override {
-        // mock
-        return false;
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(""));
     }
     bool isValid(string message) override {
-        //mock
         return true;
     }
     string execute(string message, string sender) override {
@@ -63,3 +67,108 @@ public:
     }
 };
 Leave leave = Leave();
+public:
+    string commandSyntax = "/ROOMS";
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message) override {
+        return true;
+    }
+    string execute(string message, string sender) override {
+        //mock
+        return "Executing Rooms";
+    }
+};
+Rooms rooms = Rooms();
+public:
+    string commandSyntax = "/WHO";
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message) override {
+        return true;
+    }
+    string execute(string message, string sender) override {
+        //mock
+        return "Executing Who";
+    }
+};
+Who who = Who();
+public:
+    string commandSyntax = "/HELP";
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message) override {
+        return true;
+    }
+    string execute(string message, string sender) override {
+        //mock
+        return "Executing Help";
+    }
+};
+Help help = Help();
+public:
+    string commandSyntax = "/QUIT";
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message) override {
+        return true;
+    }
+    string execute(string message, string sender) override {
+        //mock
+        return "Executing Quit";
+    }
+};
+Quit quit = Quit();
+public:
+    string commandSyntax = "/whisper";
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        string secondWord = message.substr(message.find(" "), message.length());
+        return ((firstWord.compare(commandSyntax) == 0) && (secondWord.compare("") != 0 ));
+    }
+    string execute(string message, string sender) override {
+        //mock
+        return "Executing Whisper";
+    }
+};
+Whisper whisper = whisper();
+public:
+    string commandSyntax = "/";
+    bool matches(string message) override {
+        return false;
+    }
+    bool isValid(string message) override {
+        return true;
+    }
+    string execute(string message, string sender) override {
+        //mock
+        return "Unrecognized command!";
+    }
+};
+UnreCom unreCom = UnreCom();
+public:
+    string commandSyntax = "";
+    bool matches(string message) override {
+        return false;
+    }
+    bool isValid(string message) override {
+        return true;
+    }
+    string execute(string message, string sender) override {
+        //mock
+        return "Sending message...";
+    }
+};
+Message Message = Message();

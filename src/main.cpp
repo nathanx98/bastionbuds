@@ -13,6 +13,9 @@ bool clientConnecting = false;
 int main() {
     vector<Command*> commands{&join, &leave};
 
+    string word = "woah!";
+    cout << word.substr(0, word.find(" ")) << endl;
+
     cout << "Hello, World!" << endl;
     cout << "join matches: " << commands.at(0)->matches("lol") << endl;
     cout << "join isValid: " << commands.at(0)->isValid("lol") << endl;

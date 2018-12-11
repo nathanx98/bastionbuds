@@ -17,6 +17,7 @@ main: obj/main.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $^ -o $@
 
 
+
 clean:
 	rm -f main
 	rm -rf obj
