@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]) {
     int addrlen = sizeof(address);
     char buffer[1024] = {};
     char* hello = "BASTIONBUDS";
-    
+
     //socket file descriptor
     server_fd = socket(AF_INET,SOCK_STREAM,0);
     if(server_fd < 0)
@@ -46,7 +46,7 @@ int main(int argc, char const *argv[]) {
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(8080);
-    
+
     //attach socket to port 8080
     int bind_sd = bind(server_fd,(struct sockaddr*)&address, sizeof(address));
     if(bind_sd < 0)
@@ -63,10 +63,7 @@ int main(int argc, char const *argv[]) {
     printf("%s/n",buffer);
     send(new_socket,hello,strlen(hello),0);
     printf("Hello message sent\n");
-    
-    
-    
-    
-    
     return 0;
+
+
 }

@@ -1,11 +1,11 @@
 CXX=g++
 CXXFLAGS += -g -Wall -Wextra -pthread
-CPPFLAGS += -isystem src -std=c++14
+CPPFLAGS += -isystem src -std=c++17
 
 MKDIR_P = mkdir -p
 OBJ_DIR = obj
 
-all: main 
+all: main
 
 ${OBJ_DIR}:
 	${MKDIR_P} ${OBJ_DIR}
@@ -20,4 +20,5 @@ main: obj/main.o
 clean:
 	rm -f main
 	rm -rf obj
-	rm -f *~ obj/*.o obj/*.a *.zip
+	rm -f *~ obj/*.o obj/*.a
+	
