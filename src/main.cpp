@@ -8,19 +8,23 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 
 using namespace std;
 
 
-bool clientConnecting = false;
 vector<Room*> roomList;
+vector<Command*> commands;
+pthread_mutex_t lock = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 
 char* receive(char* buffer,int socket)
 {
-    memset(buffer,0,sizeof(buffer));//reset the buffer
+    int a = sizeof(buffer);
+    memset(buffer,0,a);//reset the buffer
     read(socket,buffer,1024);
     return buffer;
 }
+
 
 
 int transmit(int socket,char* message)
@@ -31,6 +35,26 @@ int transmit(int socket,char* message)
 }
 
 
+void *client_run(void *arg)
+{
+    //char* buf;
+    User *user = (User*)arg;
+    int socket = user->getSocket();
+    while(1)
+    {
+        char* buf = receive(buf,socket);
+        for(int i=0;i<commands.size();i++)
+        {
+            if(commands[i]->matches(buf)) {
+                pthread_mutex_lock(&lock);
+                commands[i]->execute(buf,user);
+                pthread_mutex_unlock(&lock);
+                break;
+            }
+        }
+    }
+    return NULL;
+}
 
 int main() {
     Join join = Join(&roomList);
@@ -42,8 +66,8 @@ int main() {
     Whisper whisper = Whisper(&roomList);
     UnreCom unreCom = UnreCom(&roomList);
     Message message = Message(&roomList);
-
     vector<Command*> commands{&join, &leave, &rooms, &who, &help, &quit, &whisper, &unreCom, &message};
+
     User gerald = User(12);
     Room room = Room("the_wOw_room");
 
@@ -99,12 +123,10 @@ int main() {
 
     
     int server_fd;
-    int new_socket;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    char buffer[1024] = {};
-    //char* message = "BASTIONBUDS";
+
     
     //socket file descriptor
     server_fd = socket(AF_INET,SOCK_STREAM,0);
@@ -131,54 +153,29 @@ int main() {
     }
     printf("Waiting for clients to connect...\n");
     listen(server_fd,5);
-    printf("the line before accept\n");
-    new_socket = accept(server_fd, (sockaddr *)&address,(socklen_t*)&addrlen);
-    if(new_socket < 0)
-    {
-        printf("Error accepting client\n");
-        exit(1);
-    }
-    printf("connection successful\n");
-    
-    char* output = receive(buffer,new_socket);
-    printf("%s\n",output);
-    if(strcmp(output,"exit")==0)
-    {
-        printf("client exited\n");
-        exit(0);
-    }
-    //These lines were commented out, as message conflicts with the message command
-    //transmit(new_socket,message);
-    //printf("Hello message sent\n");
-
-
-
-    clientConnecting = false;
-
     cout << "Starting server. Press 'CTRL-C to close the server" << endl;
     while(true) {
         /* This is the main thread loop.
         *  This will loop indefinetly, until the user closes using "CTRL-C"
         *  This can be changed later to stop under certain conditions
         */
-
-        if(clientConnecting) {
-            //TODO: Lock mutex
-            cout << "Client connection to server..." << endl;
-
-            //TODO: Add client to global list of users
-
-            //TODO: Spawn Listen thread
-            bool connectionSuccessful = true;
-
-            if (connectionSuccessful)   {cout << "Client successfully connected to sever!" << endl;}
-            else                        {cout << "Client could not connect to server!" << endl;}
-            //TODO: Unlock Mutex
-
+        
+        int new_socket = accept(server_fd, (sockaddr *)&address,(socklen_t*)&addrlen);
+        if(new_socket < 0)
+        {
+            printf("Error accepting client\n");
+            exit(1);
         }
+        
+        User user(new_socket);
+        //TODO: Spawn Listen thread
+        pthread_t p1;
+        int rc;
+        rc = pthread_create(&p1,NULL,client_run,&user);
 
-
+    }
     return 0;
+
 }
 }
 

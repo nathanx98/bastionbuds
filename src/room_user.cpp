@@ -2,6 +2,14 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <arpa/inet.h>
+#include <pthread.h>
+
+
 using namespace std;
 
 
@@ -52,7 +60,7 @@ class User {
 private:
     int socket;
     Room *room;
-
+    
 public:
 
     string nickname;
@@ -87,6 +95,14 @@ public:
         return socket;
     }
 
+    
+    int transmit(char* message)
+    {
+        int output = send(socket,message,strlen(message),0);
+        return output;
+    }
+
+    
     /*
      * @return  the pointer to the room the user is in,
      *          and NULL if the user is not in a room
