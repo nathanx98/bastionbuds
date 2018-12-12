@@ -1,9 +1,15 @@
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
 
 class Command {
 public:
+
+    vector<Room*> *roomList;
+
+
+
     /*
      * @param   command the message sent by a user
      * @return  true if the message's first word matches this command and false otherwise.
@@ -19,7 +25,7 @@ public:
      *          after "\Join" specifying the name of a room, and false if there are two arguments
      *          after "\Join".
      */
-    virtual bool isValid(string command) {return 0;}
+    virtual bool isValid(string command, User *user) {return 0;}
 
     /*
      * @param   command the message sent by a user
@@ -27,39 +33,45 @@ public:
      * @return  the string to display to the user who sent the command.
      *          Might end up cutting this out and making the method void
      */
-    virtual string execute(string command, string sender) {}
+    virtual string execute(string command, User *user) {}
 };
 
 class Join: public Command {
 public:
+    Join(vector<Room*> *rl) {
+        roomList = rl;
+    }
     bool matches(string message) override {
         // mock
         return true;
     }
-    bool isValid(string message) override {
+    bool isValid(string message, User *user) override {
         //mock
         return false;
     }
-    string execute(string message, string sender) override {
+    string execute(string message, User *user) override {
         //mock
         return" Executing Join";
     }
 };
-Join join = Join();
+
 
 class Leave: public Command {
 public:
+    Leave(vector<Room*> *rl) {
+        roomList = rl;
+    }
     bool matches(string message) override {
         // mock
         return false;
     }
-    bool isValid(string message) override {
+    bool isValid(string message, User *user) override {
         //mock
         return true;
     }
-    string execute(string message, string sender) override {
+    string execute(string message, User *user) override {
         //mock
         return "Executing Leave";
     }
 };
-Leave leave = Leave();
+

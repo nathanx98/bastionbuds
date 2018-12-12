@@ -1,6 +1,6 @@
 #include <iostream>
-#include "commands.cpp"
 #include "room_user.cpp"
+#include "commands.cpp"
 #include <string>
 #include <vector>
 
@@ -9,20 +9,32 @@ using namespace std;
 int create_thread();
 
 bool clientConnecting = false;
-
+vector<Room*> roomList;
 
 int main() {
+    Join join = Join(&roomList);
+    Leave leave = Leave(&roomList);
     vector<Command*> commands{&join, &leave};
+    User gerald = User(12);
+    Room room = Room("the_wOw_room");
 
+    cout << "room name: " << room.getRoomName() << endl;
+    cout << "room size: " << room.listOfUsers.size() << endl;
+    room.addUser(&gerald);
+    cout << "room size: " << room.listOfUsers.size() << endl;
+    room.removeUser(&gerald);
+    cout << "room size: " << room.listOfUsers.size() << endl;
+    room.removeUser(&gerald);
+    cout << "room size: " << room.listOfUsers.size() << endl;
 
     cout << "Hello, World!" << endl;
     cout << "join matches: " << commands.at(0)->matches("lol") << endl;
-    cout << "join isValid: " << commands.at(0)->isValid("lol") << endl;
-    cout << "join execute: " << commands.at(0)->execute("lol", "no") << endl;
+    cout << "join isValid: " << commands.at(0)->isValid("lol", &gerald) << endl;
+    cout << "join execute: " << commands.at(0)->execute("lol", &gerald) << endl;
 
     cout << "leave matches: " << commands.at(1)->matches("lol") << endl;
-    cout << "leave isValid: " << commands.at(1)->isValid("lol") << endl;
-    cout << "leave execute: " << commands.at(1)->execute("lol", "no") << endl;
+    cout << "leave isValid: " << commands.at(1)->isValid("lol", &gerald) << endl;
+    cout << "leave execute: " << commands.at(1)->execute("lol", &gerald) << endl;
 
 
 
