@@ -26,7 +26,6 @@ char* receive(char* buffer,int socket)
 }
 
 
-
 int transmit(int socket,char* message)
 {
     //this method sends messages
@@ -35,9 +34,9 @@ int transmit(int socket,char* message)
 }
 
 
+
 void *client_run(void *arg)
 {
-    //char* buf;
     User *user = (User*)arg;
     int socket = user->getSocket();
     while(1)
@@ -55,6 +54,8 @@ void *client_run(void *arg)
     }
     return NULL;
 }
+
+
 
 int main() {
     Join join = Join(&roomList);

@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string.h>
 #include <vector>
+#include <stdio.h>
+
 using namespace std;
 
 char *convertString(string str) {
@@ -69,7 +71,35 @@ public:
         }
         return ((secondWord.compare("") != 0 ) && (thirdWord.compare("") != 0 ));
         */
-        return false;
+        char* msg = new char[message.size()+1];   //message.size() or size+1?
+        strcpy(msg,message.c_str());
+        string firstToken = strtok(msg," ");
+        string secondToken = strtok(NULL," ");    //nickname
+        string thirdToken = strtok(NULL," ");     //room
+        if(strtok(NULL," ") != NULL){
+            user->transmit("Oh no, you can’t have a space in your nickname.");
+            return false;
+        }
+        if(user->currentRoom() != NULL) {
+            user->transmit("Please \LEAVE the current room before using \JOIN again.");
+            return false;
+        }
+        for(int i = 0;i<roomList->size();i++)   //check for duplicated names
+        {
+            Room* rm = roomList->at(i);
+            if(rm->getRoomName().compare(thirdToken) == 0)   //found room
+            {
+                for(int j = 0;j<rm->listOfUsers.size();j++)
+                {
+                    if(rm->listOfUsers[j]->getNickname().compare(secondToken)==0)
+                    {
+                        user->transmit("Uh oh! There’s already a here!\n");
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
     void execute(string message, User *user) override {
         string nickname = "";
@@ -217,7 +247,19 @@ public:
         string secondWord = message.substr(message.find(" "), message.length());
         return ((firstWord.compare(commandSyntax) == 0) && (secondWord.compare("") != 0 ));
         */
-        return false;
+        char* msg = new char[message.size()+1];   //message.size() or size+1?
+        strcpy(msg,message.c_str());
+        string firstToken = strtok(msg," ");
+        string secondToken = strtok(NULL," ");    //name
+        string thirdToken = strtok(NULL," ");     //actual message
+        vector<User*> list = user->getRoom()->listOfUsers;
+        for(int i = 0;i<list.size();i++)
+        {
+            string name = list[i]->nickname;
+            if(name.compare(secondToken) == 0) break;
+            return false;
+        }
+        return (thirdToken.compare("") != 0);
     }
     void execute(string message, User *user) override {
         //TODO: Raymond plz do regex, k thx
