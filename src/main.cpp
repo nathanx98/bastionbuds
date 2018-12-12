@@ -57,6 +57,7 @@ void *client_run(void *arg)
 
 
 
+
 int main() {
     Join join = Join(&roomList);
     Leave leave = Leave(&roomList);

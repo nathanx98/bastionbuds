@@ -73,15 +73,24 @@ public:
         */
         char* msg = new char[message.size()+1];   //message.size() or size+1?
         strcpy(msg,message.c_str());
-        string firstToken = strtok(msg," ");
-        string secondToken = strtok(NULL," ");    //nickname
-        string thirdToken = strtok(NULL," ");     //room
+        char* firstToken = strtok(msg," ");
+        char* secondToken = strtok(NULL," ");      //nickname
+        if(secondToken == NULL){
+            user->transmit("Not enough arguments\n");
+            return false;
+        }
+        char* thirdToken = strtok(NULL," ");     //room
+        if(thirdToken == NULL)
+        {
+            user->transmit("Not enough arguments\n");
+            return false;
+        }
         if(strtok(NULL," ") != NULL){
-            user->transmit("Oh no, you can’t have a space in your nickname.");
+            user->transmit("Oh no, you can’t have a space in your nickname.\n");
             return false;
         }
         if(user->currentRoom() != NULL) {
-            user->transmit("Please /LEAVE the current room before using /JOIN again.");
+            user->transmit("Please /LEAVE the current room before using /JOIN again.\n");
             return false;
         }
         for(int i = 0;i<roomList->size();i++)   //check for duplicated names
@@ -262,19 +271,29 @@ public:
         */
         char* msg = new char[message.size()+1];   //message.size() or size+1?
         strcpy(msg,message.c_str());
-        string firstToken;
-        string secondToken;
-        string thirdToken;
+        char* firstToken;
+        char* secondToken;
+        char* thirdToken;
         vector<User*> list = user->getRoom()->listOfUsers;
         firstToken = strtok(msg," ");
         secondToken = strtok(NULL," ");    //name, breaks here
+        if(secondToken == NULL)
+        {
+            user->transmit("Not enough arguments\n");
+            return false;
+        }
         thirdToken = strtok(NULL," ");     //actual message
+        if(thirdToken == NULL)
+        {
+            user->transmit("Not enough arguments\n");
+            return false;
+        }
         for(int i = 0;i<list.size();i++)
         {
             string name = list[i]->nickname;
+            string temp(thirdToken);
             if(name.compare(secondToken) == 0)
-                return (thirdToken.compare("") != 0);
-
+                return (temp.compare("") != 0);
         }
         return false;
     }
