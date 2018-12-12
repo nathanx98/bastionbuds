@@ -65,12 +65,38 @@ int main() {
     Help help = Help(&roomList);
     Quit quit = Quit(&roomList);
     Whisper whisper = Whisper(&roomList);
+    ChessReset chessReset = ChessReset(&roomList);
+    ChessMove chessMove = ChessMove(&roomList);
+    ChessPrint chessPrint = ChessPrint(&roomList);
     UnreCom unreCom = UnreCom(&roomList);
     Message message = Message(&roomList);
-    vector<Command*> commands{&join, &leave, &rooms, &who, &help, &quit, &whisper, &unreCom, &message};
+    vector<Command*> commands{&join, &leave, &rooms, &who, &help, &quit, &whisper, &chessReset, &chessMove, &chessPrint, &unreCom, &message};
 
     User gerald = User(12);
     Room room = Room("the_wOw_room");
+    roomList.push_back(&room);
+    room.addUser(&gerald);
+    gerald.setRoom(&room);
+
+    string buf = "";
+    for(int i=0;i<commands.size();i++)
+        {
+            if(commands[i]->matches(buf)) {
+                pthread_mutex_lock(&lock);
+                commands[i]->execute(buf,&gerald);
+                pthread_mutex_unlock(&lock);
+                break;
+            }
+        }
+
+    //Room room = Room("the_wOw_room");
+    /*
+    ChessBoard chess = ChessBoard();
+
+    cout << chess.boardString() << endl;
+    chess.movePiece(1,1, 2,1);
+    chess.movePiece(111,1, 2,1);
+    cout << chess.boardString() << endl;
 
     cout << "room name: " << room.getRoomName() << endl;
     cout << "room size: " << room.listOfUsers.size() << endl;
@@ -83,7 +109,7 @@ int main() {
     //room.removeUser(&gerald);
     cout << "room size: " << room.listOfUsers.size() << endl;
     roomList.push_back(&room);
-
+    */
     cout << "Hello, World!" << endl;
     cout << "join matches: " << commands.at(0)->matches("lol") << endl;
     cout << "join isValid: " << commands.at(0)->isValid("lol a  a a   ", &gerald) << endl;

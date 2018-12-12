@@ -86,16 +86,90 @@ public:
 
 };
 
+class ChessBoard {
+public:
+    int board[8][8] = { {2, 3, 4, 5, 6, 4, 3, 2},
+                        {1, 1, 1, 1, 1, 1, 1, 1},
+                        {0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0},
+                        {7, 7, 7, 7, 7, 7, 7, 7},
+                        {8, 9,10,11,12,10, 9, 8} };
+    string boardString() {
+        string returnString = "   1  2  3  4  5  6  7  8\n";
+        returnString += " |------------------------|\n";
+
+        for (int i=0; i<8; i++){
+            if (i%2 == 0) {returnString += " |███   ███   ███   ███   |\n";}
+            else          {returnString += " |   ███   ███   ███   ███|\n";}
+            returnString+= to_string(i+1);
+            returnString+= "|";
+            for(int j=0; j<8; j++) {
+                if ((i+j)%2 == 0) {returnString+="█";}
+                else {returnString+=" ";}
+                switch(board[i][j]) {
+                    case 1: returnString+="p";  break;
+                    case 2: returnString+="r";  break;
+                    case 3: returnString+="n";  break;
+                    case 4: returnString+="b";  break;
+                    case 5: returnString+="q";  break;
+                    case 6: returnString+="k";  break;
+                    case 7: returnString+="P";  break;
+                    case 8: returnString+="R";  break;
+                    case 9: returnString+="N";  break;
+                    case 10: returnString+="B"; break;
+                    case 11: returnString+="Q"; break;
+                    case 12: returnString+="K"; break;
+                    default: if ((i+j)%2 == 0) {returnString+="█";}
+                             else {returnString+=" ";}
+                             break;
+                }
+                if ((i+j)%2 == 0) {returnString+="█";}
+                else {returnString+=" ";}
+            }
+            if (i%2 == 0) {returnString += "|\n |███   ███   ███   ███   |\n";}
+            else          {returnString += "|\n |   ███   ███   ███   ███|\n";}
+        }
+        returnString += " |------------------------|";
+        return returnString;
+    }
+
+
+    void movePiece(int currRow, int currCol, int destRow, int destCol){
+        if((currRow <= 8 ) && (currCol <= 8 ) && (destRow <= 8 ) && (destCol <= 8 ) &&
+        (currRow >= 1 ) && (currCol >= 1 ) && (destRow >= 1 ) && (destCol >= 1 )) {
+            board[destRow-1][destCol-1] = board[currRow-1][currCol-1];
+            board[currRow-1][currCol-1] = 0;
+        }
+    }
+
+    void resetBoard() {
+        int newboard[8][8]={{2, 3, 4, 5, 6, 4, 3, 2},
+                        {1, 1, 1, 1, 1, 1, 1, 1},
+                        {0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0},
+                        {7, 7, 7, 7, 7, 7, 7, 7},
+                        {8, 9,10,11,12,10, 9, 8} };
+         copy(&newboard[0][0], &newboard[0][0]+8*8,&board[0][0]);
+    }
+
+};
 
 
 class Room {
 private:
     string name;
+    ChessBoard chess;
 
 public:
     vector<User*> listOfUsers;
+
     Room(string roomName) {
         name = roomName;
+        chess = ChessBoard();
     }
     /*
      * @param  a pointer for the user that is being added
@@ -122,6 +196,15 @@ public:
         for(vector<User*>::iterator it = listOfUsers.begin(); it != listOfUsers.end(); it++) {
             (*it)->transmit(broadcastMessage);
         }
+    }
+    void chessResetBoard() {
+        chess.resetBoard();
+    }
+    void chessMovePiece(int currRow, int currCol, int destRow, int destCol) {
+        chessMovePiece(currRow, currCol, destRow, destCol);
+    }
+    string chessBoardString() {
+        return chess.boardString();
     }
 };
 

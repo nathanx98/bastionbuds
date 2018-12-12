@@ -81,7 +81,7 @@ public:
             return false;
         }
         if(user->currentRoom() != NULL) {
-            user->transmit("Please \LEAVE the current room before using \JOIN again.");
+            user->transmit("Please /LEAVE the current room before using /JOIN again.");
             return false;
         }
         for(int i = 0;i<roomList->size();i++)   //check for duplicated names
@@ -93,7 +93,7 @@ public:
                 {
                     if(rm->listOfUsers[j]->getNickname().compare(secondToken)==0)
                     {
-                        user->transmit("Uh oh! There’s already a here!\n");
+                        user->transmit("Uh oh! That nickname already exists here!\n");
                         return false;
                     }
                 }
@@ -124,9 +124,16 @@ public:
     }
     void execute(string message, User *user) override {
         string returnString = user->getNickname() + " left the room. :(";
+        Room *roomToLeave = user->getRoom();
         user->getRoom()->broadcastInRoom(convertString(returnString));
         user->getRoom()->removeUser(user);
         user->setRoom(NULL);
+        if (roomToLeave->listOfUsers.size() == 0) {
+            vector<Room*>::iterator removePosition = find(roomList->begin(), roomList->end(), roomToLeave);
+            if (removePosition != roomList->end()) {
+                roomList->erase(removePosition);
+            }
+        }
         return;
     }
 };
@@ -266,6 +273,65 @@ public:
         string nickname = "";
         string messageToSend = "";
         //TODO
+        return;
+    }
+};
+class ChessReset: public Command {
+public:
+    string commandSyntax = "/CHESSRESET";
+    ChessReset(vector<Room*> *rl) {
+        roomList = rl;
+    }
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message, User *user) override {
+        return true;
+    }
+    void execute(string message, User *user) override {
+        user->currentRoom()->chessResetBoard();
+        user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
+        return;
+    }
+};
+class ChessMove: public Command {
+public:
+    string commandSyntax = "/CHESSMOVE";
+    ChessMove(vector<Room*> *rl) {
+        roomList = rl;
+    }
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message, User *user) override {
+        //TODO: similar to how join and whisper is done, with 4 numbers after /CHESSMOVE
+        return true;
+    }
+    void execute(string message, User *user) override {
+        int currRow, currCol, destRow, destCol;
+        //TODO: set stuff to curr and dest
+        user->currentRoom()->chessMovePiece(currRow, currCol, destRow, destCol);
+        user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
+        return;
+    }
+};
+class ChessPrint: public Command {
+public:
+    string commandSyntax = "/CHESSPRINT";
+    ChessPrint(vector<Room*> *rl) {
+        roomList = rl;
+    }
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message, User *user) override {
+        return true;
+    }
+    void execute(string message, User *user) override {
+        user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
         return;
     }
 };
