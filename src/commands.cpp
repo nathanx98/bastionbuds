@@ -5,11 +5,8 @@ using namespace std;
 
 class Command {
 public:
-
     vector<Room*> *roomList;
-
-
-
+    string commandSyntax = "";
     /*
      * @param   command the message sent by a user
      * @return  true if the message's first word matches this command and false otherwise.
@@ -41,37 +38,166 @@ public:
     Join(vector<Room*> *rl) {
         roomList = rl;
     }
+    string commandSyntax = "/JOIN";
     bool matches(string message) override {
-        // mock
-        return true;
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
-        //mock
-        return false;
+        string firstWord = message.substr(0, message.find(" "));
+        if (firstWord.length() >= (message.length() - 1)) {
+            return false;
+        }
+        string secondWord = message.substr(message.find(" "), message.length());
+        return ((firstWord.compare(commandSyntax) == 0) && (secondWord.compare("") != 0 ));
     }
     string execute(string message, User *user) override {
-        //mock
+        //TODO
         return" Executing Join";
     }
 };
-
-
 class Leave: public Command {
 public:
+    string commandSyntax = "/LEAVE";
     Leave(vector<Room*> *rl) {
         roomList = rl;
     }
     bool matches(string message) override {
-        // mock
-        return false;
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(""));
     }
     bool isValid(string message, User *user) override {
-        //mock
+        return (*user).inRoom();
+    }
+    string execute(string message, User *user) override {
+        //TODO
+        return "Executing Leave";
+    }
+};
+class Rooms: public Command {
+public:
+    string commandSyntax = "/ROOMS";
+    Rooms(vector<Room*> *rl) {
+        roomList = rl;
+    }
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message, User *user) override {
         return true;
     }
     string execute(string message, User *user) override {
-        //mock
-        return "Executing Leave";
+        //TODO
+        return "Executing Rooms";
+    }
+};
+class Who: public Command {
+public:
+    string commandSyntax = "/WHO";
+    Who(vector<Room*> *rl) {
+        roomList = rl;
+    }
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message, User *user) override {
+        return true;
+    }
+    string execute(string message, User *user) override {
+        //TODO
+        return "Executing Who";
+    }
+};
+class Help: public Command {
+public:
+    string commandSyntax = "/HELP";
+    Help(vector<Room*> *rl) {
+        roomList = rl;
+    }
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message, User *user) override {
+        return true;
+    }
+    string execute(string message, User *user) override {
+        //TODO
+        return "Executing Help";
+    }
+};
+class Quit: public Command {
+public:
+    string commandSyntax = "/QUIT";
+    Quit(vector<Room*> *rl) {
+        roomList = rl;
+    }
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message, User *user) override {
+        return true;
+    }
+    string execute(string message, User *user) override {
+        //TODO
+        return "Executing Quit";
+    }
+};
+class Whisper: public Command {
+public:
+    string commandSyntax = "/whisper";
+    Whisper(vector<Room*> *rl) {
+        roomList = rl;
+    }
+    bool matches(string message) override {
+        string firstWord = message.substr(0, message.find(" "));
+        return (firstWord.compare(commandSyntax) == 0);
+    }
+    bool isValid(string message, User *user) override {
+        string firstWord = message.substr(0, message.find(" "));
+        string secondWord = message.substr(message.find(" "), message.length());
+        return ((firstWord.compare(commandSyntax) == 0) && (secondWord.compare("") != 0 ));
+    }
+    string execute(string message, User *user) override {
+        //TODO
+        return "Executing Whisper";
+    }
+};
+class UnreCom: public Command {
+public:
+    string commandSyntax = "/";
+    UnreCom(vector<Room*> *rl) {
+        roomList = rl;
+    }
+    bool matches(string message) override {
+        return false;
+    }
+    bool isValid(string message, User *user) override {
+        return true;
+    }
+    string execute(string message, User *user) override {
+        //TODO
+        return "Unrecognized command!";
+    }
+};
+class Message: public Command {
+public:
+    string commandSyntax = "";
+    Message(vector<Room*> *rl) {
+        roomList = rl;
+    }
+    bool matches(string message) override {
+        return false;
+    }
+    bool isValid(string message, User *user) override {
+        return true;
+    }
+    string execute(string message, User *user) override {
+        //TODO
+        return "Sending message...";
     }
 };
 

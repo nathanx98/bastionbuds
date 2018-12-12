@@ -14,6 +14,14 @@ vector<Room*> roomList;
 int main() {
     Join join = Join(&roomList);
     Leave leave = Leave(&roomList);
+    Rooms rooms = Rooms(&roomList);
+    Who who = Who(&roomList);
+    Help help = Help(&roomList);
+    Quit quit = Quit(&roomList);
+    Whisper whisper = Whisper(&roomList);
+    UnreCom unreCom = UnreCom(&roomList);
+    Message message = Message(&roomList);
+
     vector<Command*> commands{&join, &leave};
     User gerald = User(12);
     Room room = Room("the_wOw_room");
@@ -26,6 +34,9 @@ int main() {
     cout << "room size: " << room.listOfUsers.size() << endl;
     room.removeUser(&gerald);
     cout << "room size: " << room.listOfUsers.size() << endl;
+
+    string word = "woah!";
+    cout << word.substr(0, word.find(" ")) << endl;
 
     cout << "Hello, World!" << endl;
     cout << "join matches: " << commands.at(0)->matches("lol") << endl;
