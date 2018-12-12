@@ -86,39 +86,39 @@ int main() {
     cout << "Hello, World!" << endl;
     cout << "join matches: " << commands.at(0)->matches("lol") << endl;
     cout << "join isValid: " << commands.at(0)->isValid("lol a  a a   ", &gerald) << endl;
-    cout << "join execute: " << commands.at(0)->execute("lol", &gerald) << endl;
+    //cout << "join execute: " << commands.at(0)->execute("lol", &gerald) << endl;
 
     cout << "leave matches: " << commands.at(1)->matches("lol") << endl;
     cout << "leave isValid: " << commands.at(1)->isValid("lol", &gerald) << endl;
-    cout << "leave execute: " << commands.at(1)->execute("lol", &gerald) << endl;
+    //cout << "leave execute: " << commands.at(1)->execute("lol", &gerald) << endl;
 
     cout << "rooms matches: " << commands.at(2)->matches("lol") << endl;
     cout << "rooms isValid: " << commands.at(2)->isValid("lol", &gerald) << endl;
-    cout << "rooms execute: " << commands.at(2)->execute("lol", &gerald) << endl;
+    //cout << "rooms execute: " << commands.at(2)->execute("lol", &gerald) << endl;
 
     cout << "who matches: " << commands.at(3)->matches("lol") << endl;
     cout << "who isValid: " << commands.at(3)->isValid("lol", &gerald) << endl;
-    cout << "who execute: " << commands.at(3)->execute("lol", &gerald) << endl;
+    //cout << "who execute: " << commands.at(3)->execute("lol", &gerald) << endl;
 
     cout << "help matches: " << commands.at(4)->matches("lol") << endl;
     cout << "help isValid: " << commands.at(4)->isValid("lol", &gerald) << endl;
-    cout << "help execute: " << commands.at(4)->execute("lol", &gerald) << endl;
+   // cout << "help execute: " << commands.at(4)->execute("lol", &gerald) << endl;
 
     cout << "quit matches: " << commands.at(5)->matches("lol") << endl;
     cout << "quit isValid: " << commands.at(5)->isValid("lol", &gerald) << endl;
-    cout << "quit execute: " << commands.at(5)->execute("lol", &gerald) << endl;
+    //cout << "quit execute: " << commands.at(5)->execute("lol", &gerald) << endl;
 
     cout << "whisper matches: " << commands.at(6)->matches("lol") << endl;
     cout << "whisper isValid: " << commands.at(6)->isValid("lol", &gerald) << endl;
-    cout << "whisper execute: " << commands.at(6)->execute("lol", &gerald) << endl;
+    //cout << "whisper execute: " << commands.at(6)->execute("lol", &gerald) << endl;
 
     cout << "unreCom matches: " << commands.at(7)->matches("lol") << endl;
     cout << "unreCom isValid: " << commands.at(7)->isValid("lol", &gerald) << endl;
-    cout << "unreCom execute: " << commands.at(7)->execute("lol", &gerald) << endl;
+    //cout << "unreCom execute: " << commands.at(7)->execute("lol", &gerald) << endl;
 
     cout << "message matches: " << commands.at(8)->matches("lol") << endl;
     cout << "message isValid: " << commands.at(8)->isValid("lol", &gerald) << endl;
-    cout << "message execute: " << commands.at(8)->execute("lol", &gerald) << endl;
+    //cout << "message execute: " << commands.at(8)->execute("lol", &gerald) << endl;
 
 
     
@@ -177,7 +177,7 @@ int main() {
     return 0;
 
 }
-}
+
 
 
 
