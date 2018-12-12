@@ -72,13 +72,15 @@ int main() {
     Message message = Message(&roomList);
     vector<Command*> commands{&join, &leave, &rooms, &who, &help, &quit, &whisper, &chessReset, &chessMove, &chessPrint, &unreCom, &message};
 
+
+
     User gerald = User(12);
     Room room = Room("the_wOw_room");
     roomList.push_back(&room);
     room.addUser(&gerald);
     gerald.setRoom(&room);
 
-    string buf = "";
+    string buf = "/CHESSMOVE 1 1 3 1";
     for(int i=0;i<commands.size();i++)
         {
             if(commands[i]->matches(buf)) {
@@ -88,7 +90,7 @@ int main() {
                 break;
             }
         }
-
+    cout << room.chessBoardString() << endl;
     //Room room = Room("the_wOw_room");
     /*
     ChessBoard chess = ChessBoard();

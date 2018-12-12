@@ -102,6 +102,7 @@ public:
         return true;
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting Join\n";
         string nickname = "";
         string room = "";
         //TODO: Raymond plz do regex, k thx
@@ -117,12 +118,13 @@ public:
     }
     bool matches(string message) override {
         string firstWord = message.substr(0, message.find(" "));
-        return (firstWord.compare(""));
+        return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
         return (*user).inRoom();
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting Leave\n";
         string returnString = user->getNickname() + " left the room. :(";
         Room *roomToLeave = user->getRoom();
         user->getRoom()->broadcastInRoom(convertString(returnString));
@@ -151,6 +153,7 @@ public:
         return true;
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting Rooms\n";
         string returnString = "Current Rooms: ";
         if (roomList->size() <= 0) {
             user->transmit("Sorry, no rooms yet!");
@@ -177,6 +180,7 @@ public:
         return (*user).inRoom();
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting Who\n";
         if (!isValid(message, user)){
             user->transmit("You are not currently in a room, and all alone ;_;");
             return;
@@ -208,6 +212,7 @@ public:
         return true;
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting Help\n";
         string returnString = "/JOIN <nickname> <room>: Joins <room> under the name <nickname>. Creates <room> if a room of that name does not exist.\n";
         returnString += "/ROOMS: Lists out all of the current rooms.\n";
         returnString += "/LEAVE: Leaves the current room you are in.\n";
@@ -233,6 +238,7 @@ public:
         return true;
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting Quit\n";
         //TODO
         return;
     }
@@ -256,19 +262,26 @@ public:
         */
         char* msg = new char[message.size()+1];   //message.size() or size+1?
         strcpy(msg,message.c_str());
-        string firstToken = strtok(msg," ");
-        string secondToken = strtok(NULL," ");    //name
-        string thirdToken = strtok(NULL," ");     //actual message
+        string firstToken;
+        string secondToken;
+        string thirdToken;
         vector<User*> list = user->getRoom()->listOfUsers;
+        firstToken = strtok(msg," ");
+        secondToken = strtok(NULL," ");    //name, breaks here
+        thirdToken = strtok(NULL," ");     //actual message
         for(int i = 0;i<list.size();i++)
         {
             string name = list[i]->nickname;
-            if(name.compare(secondToken) == 0) break;
-            return false;
+            if(name.compare(secondToken) == 0)
+                return (thirdToken.compare("") != 0);
+
         }
-        return (thirdToken.compare("") != 0);
+        return false;
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting Whisper\n";
+        if (!isValid(message, user))
+            return;
         //TODO: Raymond plz do regex, k thx
         string nickname = "";
         string messageToSend = "";
@@ -290,6 +303,7 @@ public:
         return true;
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting ChessReset\n";
         user->currentRoom()->chessResetBoard();
         user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
         return;
@@ -306,12 +320,44 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
-        //TODO: similar to how join and whisper is done, with 4 numbers after /CHESSMOVE
+        char* msg = new char[message.size()+1];
+        try {
+            strcpy(msg,message.c_str());
+            string firstToken = strtok(msg," ");
+            string secondToken = strtok(NULL," ");
+            string thirdToken = strtok(NULL," ");
+            string forthToken = strtok(NULL," ");
+            string fifthToken = strtok(NULL," ");
+
+            int currRow = stoi(secondToken);
+            int currCol = stoi(thirdToken);
+            int destRow = stoi(forthToken);
+            int destCol = stoi(fifthToken);
+        }
+        catch (const exception &ex) {
+            return false;
+        }
         return true;
     }
     void execute(string message, User *user) override {
-        int currRow, currCol, destRow, destCol;
-        //TODO: set stuff to curr and dest
+        cout << "Excecuting ChessMove\n";
+        if (!isValid(message, user)) {
+            return;
+        }
+        cout << "wow\n";
+        char* msg = new char[message.size()+1];
+        strcpy(msg,message.c_str());
+        string firstToken = strtok(msg," ");
+        string secondToken = strtok(NULL," ");
+        string thirdToken = strtok(NULL," ");
+        string forthToken = strtok(NULL," ");
+        string fifthToken = strtok(NULL," ");
+        cout << "wow\n";
+        int currRow = stoi(secondToken);
+        int currCol = stoi(thirdToken);
+        int destRow = stoi(forthToken);
+        int destCol = stoi(fifthToken);
+        cout << "wow\n";
         user->currentRoom()->chessMovePiece(currRow, currCol, destRow, destCol);
         user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
         return;
@@ -331,6 +377,7 @@ public:
         return true;
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting ChessPrint\n";
         user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
         return;
     }
@@ -348,6 +395,7 @@ public:
         return true;
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting UnreCom\n";
         user->transmit("The command you attempted does not exist (Oh no!). Type /HELP for a list of usable commands");
         return;
     }
@@ -365,6 +413,7 @@ public:
         return (*user).inRoom();
     }
     void execute(string message, User *user) override {
+        cout << "Excecuting Message\n";
         string returnString = "[" + user->getNickname() + "] " + message;
         user->getRoom()->broadcastInRoom(convertString(returnString));
         return;
