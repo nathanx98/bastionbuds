@@ -89,6 +89,12 @@ public:
         return nickname;
     }
     /*
+     * @return  the room the user is in
+     */
+    room *getRoom() {
+        return room;
+    }
+    /*
      * @return  the socket that is associated to this user
      */
     int getSocket() {
