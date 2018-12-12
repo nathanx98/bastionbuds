@@ -13,54 +13,13 @@
 using namespace std;
 
 
-class User;
-
-
-
-
-class Room {
-private:
-    string name;
-
-public:
-    vector<User*> listOfUsers;
-
-    Room(string roomName) {
-        name = roomName;
-    }
-
-    /*
-     * @param  a pointer for the user that is being added
-     */
-    void addUser(User* newUser) {
-        listOfUsers.push_back(newUser);
-    }
-
-    /*
-     * @param  a pointer for the user that is being removed
-     */
-    void removeUser(User* userToRemove) {
-        vector<User*>::iterator removePosition = find(listOfUsers.begin(), listOfUsers.end(), userToRemove);
-        if (removePosition != listOfUsers.end()) {
-            listOfUsers.erase(removePosition);
-        }
-    }
-
-
-    /*
-     * @return  the name of the server
-     */
-    string getRoomName() {
-        return name;
-    }
-};
-
+class Room;
 
 class User {
 private:
     int socket;
     Room *room;
-    
+
 public:
 
     string nickname;
@@ -91,7 +50,7 @@ public:
     /*
      * @return  the room the user is in
      */
-    room *getRoom() {
+    Room *getRoom() {
         return room;
     }
     /*
@@ -101,14 +60,14 @@ public:
         return socket;
     }
 
-    
+
     int transmit(char* message)
     {
         int output = send(socket,message,strlen(message),0);
         return output;
     }
 
-    
+
     /*
      * @return  the pointer to the room the user is in,
      *          and NULL if the user is not in a room
@@ -126,3 +85,44 @@ public:
     }
 
 };
+
+
+
+class Room {
+private:
+    string name;
+
+public:
+    vector<User*> listOfUsers;
+    Room(string roomName) {
+        name = roomName;
+    }
+    /*
+     * @param  a pointer for the user that is being added
+     */
+    void addUser(User* newUser) {
+        listOfUsers.push_back(newUser);
+    }
+    /*
+     * @param  a pointer for the user that is being removed
+     */
+    void removeUser(User* userToRemove) {
+        vector<User*>::iterator removePosition = find(listOfUsers.begin(), listOfUsers.end(), userToRemove);
+        if (removePosition != listOfUsers.end()) {
+            listOfUsers.erase(removePosition);
+        }
+    }
+    /*
+     * @return  the name of the server
+     */
+    string getRoomName() {
+        return name;
+    }
+    void broadcastInRoom(char* broadcastMessage) {
+        for(vector<User*>::iterator it = listOfUsers.begin(); it != listOfUsers.end(); it++) {
+            (*it)->transmit(broadcastMessage);
+        }
+    }
+};
+
+

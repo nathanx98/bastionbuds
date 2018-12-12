@@ -3,6 +3,12 @@
 #include <vector>
 using namespace std;
 
+char *convertString(string str) {
+    char *cstring = new char[str.length() + 1];
+    strcpy(cstring, str.c_str());
+    return cstring;
+}
+
 class Command {
 public:
     vector<Room*> *roomList;
@@ -87,7 +93,10 @@ public:
         return (*user).inRoom();
     }
     void execute(string message, User *user) override {
-        //TODO
+        string returnString = user->getNickname() + " left the room. :(";
+        user->getRoom()->broadcastInRoom(convertString(returnString));
+        user->getRoom()->removeUser(user);
+        user->setRoom(NULL);
         return;
     }
 };
@@ -107,13 +116,13 @@ public:
     void execute(string message, User *user) override {
         string returnString = "Current Rooms: ";
         if (roomList->size() <= 0) {
-            //TODO: Transmit "Sorry, no rooms yet!"
+            user->transmit("Sorry, no rooms yet!");
             return;
         }
         for(vector<Room*>::iterator it = roomList->begin(); it != roomList->end(); it++) {
             returnString += (**it).getRoomName() + " ";
         }
-        //TODO: transmit return string
+        user->transmit(convertString(returnString));
         return;
     }
 };
@@ -132,19 +141,19 @@ public:
     }
     void execute(string message, User *user) override {
         if (!isValid(message, user)){
-            //TODO: What happens if user is not in room.
+            user->transmit("You are not currently in a room, and all alone ;_;");
             return;
         }
         string returnString = "Here are all of the users in " + user->currentRoom()->getRoomName() + ": ";
         if (user->currentRoom()->listOfUsers.size() <= 0) {
-            returnString = "Wait a minute, no one is in this room?!?";
-            //TODO: Transmit returnString
+            returnString = "Wait a minute, no one is in this room?!? What about you!?!";
+            user->transmit(convertString(returnString));
             return;
         }
         for(vector<User*>::iterator it = user->currentRoom()->listOfUsers.begin(); it != user->currentRoom()->listOfUsers.end(); it++) {
             returnString += (**it).getNickname() + " ";
         }
-        //TODO: Transmit return string
+        user->transmit(convertString(returnString));
         return;
     }
 };
@@ -169,7 +178,7 @@ public:
         returnString += "/HELP: Lists all of the commands, as you see here.\n";
         returnString += "/QUIT: Closes the app.\n";
         returnString += "/WHISPER <nickname> <message>: Sends <message> to the person named <nickname> inside your room.";
-        //TODO: transmit return string
+        user->transmit(convertString(returnString));
         return;
     }
 };
@@ -231,7 +240,7 @@ public:
         return true;
     }
     void execute(string message, User *user) override {
-        //TODO
+        user->transmit("The command you attempted does not exist (Oh no!). Type /HELP for a list of usable commands");
         return;
     }
 };
@@ -245,10 +254,11 @@ public:
         return false;
     }
     bool isValid(string message, User *user) override {
-        return true;
+        return (*user).inRoom();
     }
     void execute(string message, User *user) override {
-        //TODO
+        string returnString = "[" + user->getNickname() + "] " + message;
+        user->getRoom()->broadcastInRoom(convertString(returnString));
         return;
     }
 };
