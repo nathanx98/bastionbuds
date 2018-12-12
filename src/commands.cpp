@@ -50,47 +50,26 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
-        //TODO: Raymond plz do regex, k thx
-        /*
-        string firstWord = message.substr(0, message.find(" "));
-        if (firstWord.length() >= (message.length())) {
-            cout << "1\n";
-            return false;
-        }
-        string secondWord = message.substr(message.find(" "), message.length());
-        string thirdWord = message.substr(message.find(" "), message.length());
-        thirdWord = message.substr(0, message.find(" "));
-        secondWord = secondWord.substr(0,message.find(" "));
-        if (secondWord.length() + firstWord.length() >= (message.length())) {
-            cout << "2\n";
-            return false;
-        }
-        if (secondWord.length() + firstWord.length() + thridWord >= (message.length())) {
-            cout << "3\n";
-            return false;
-        }
-        return ((secondWord.compare("") != 0 ) && (thirdWord.compare("") != 0 ));
-        */
         char* msg = new char[message.size()+1];   //message.size() or size+1?
         strcpy(msg,message.c_str());
         char* firstToken = strtok(msg," ");
         char* secondToken = strtok(NULL," ");      //nickname
         if(secondToken == NULL){
-            user->transmit("Not enough arguments\n");
+            user->transmit("Not enough arguments");
             return false;
         }
         char* thirdToken = strtok(NULL," ");     //room
         if(thirdToken == NULL)
         {
-            user->transmit("Not enough arguments\n");
+            user->transmit("Not enough arguments");
             return false;
         }
         if(strtok(NULL," ") != NULL){
-            user->transmit("Oh no, you can’t have a space in your nickname.\n");
+            user->transmit("Oh no, you can’t have a space in your nickname.");
             return false;
         }
         if(user->currentRoom() != NULL) {
-            user->transmit("Please /LEAVE the current room before using /JOIN again.\n");
+            user->transmit("Please /LEAVE the current room before using /JOIN again.");
             return false;
         }
         for(int i = 0;i<roomList->size();i++)   //check for duplicated names
@@ -102,7 +81,7 @@ public:
                 {
                     if(rm->listOfUsers[j]->getNickname().compare(secondToken)==0)
                     {
-                        user->transmit("Uh oh! That nickname already exists here!\n");
+                        user->transmit("Uh oh! That nickname already exists here!");
                         return false;
                     }
                 }
@@ -285,12 +264,6 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
-        //TODO: Raymond plz do regex, k thx
-    /*
-        string firstWord = message.substr(0, message.find(" "));
-        string secondWord = message.substr(message.find(" "), message.length());
-        return ((firstWord.compare(commandSyntax) == 0) && (secondWord.compare("") != 0 ));
-        */
         char* msg = new char[message.size()+1];   //message.size() or size+1?
         strcpy(msg,message.c_str());
         char* firstToken;
@@ -301,13 +274,13 @@ public:
         secondToken = strtok(NULL," ");    //name, breaks here
         if(secondToken == NULL)
         {
-            user->transmit("Not enough arguments\n");
+            user->transmit("Not enough arguments");
             return false;
         }
         thirdToken = strtok(NULL," ");     //actual message
         if(thirdToken == NULL)
         {
-            user->transmit("Not enough arguments\n");
+            user->transmit("Not enough arguments");
             return false;
         }
         for(int i = 0;i<list.size();i++)
@@ -321,13 +294,27 @@ public:
         return false;
     }
     void execute(string message, User *user) override {
-        cout << "Excecuting Whisper\n";
-        if (!isValid(message, user))
+        cout << "Excecuting Whisper";
+        if (!isValid(message, user)) {
+            user->transmit("Invalid use! Please use: /WHISPER <nickname> <message>");
             return;
-        //TODO: Raymond plz do regex, k thx
-        string nickname = "";
-        string messageToSend = "";
-        //TODO
+        }
+        char* msg = new char[message.size()+1];
+        strcpy(msg,message.c_str());
+        string firstToken = strtok(msg," ");
+        string nickname = strtok(NULL," ");
+        string messageToSend = strtok(NULL," ");
+        Room *room = user->getRoom();
+        for (vector<User*>::iterator it = room->listOfUsers.begin(); it != room->listOfUsers.end(); it++) {
+            if ((**it).getNickname() == nickname) {
+                string receiverString = "[" + user->getNickname() + " whispers to you] " + messageToSend;
+                string senderString = "[You whisper to " + nickname + "] " + messageToSend;
+                (**it).transmit(convertString(receiverString));
+                user->transmit(convertString(senderString));
+                return;
+            }
+        }
+        user->transmit(convertString(nickname + " is not in this room! ;_;"));
         return;
     }
 };
