@@ -202,7 +202,6 @@ public:
         chess.resetBoard();
     }
     void chessMovePiece(int currRow, int currCol, int destRow, int destCol) {
-        cout << "wow\n";
         chess.movePiece(currRow, currCol, destRow, destCol);
     }
     string chessBoardString() {

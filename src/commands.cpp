@@ -112,10 +112,25 @@ public:
     }
     void execute(string message, User *user) override {
         cout << "Excecuting Join\n";
-        string nickname = "";
-        string room = "";
-        //TODO: Raymond plz do regex, k thx
-        //TODO
+        if (!isValid(message, user)) {
+            return;
+        }
+        char* msg = new char[message.size()+1];
+        strcpy(msg,message.c_str());
+        string firstToken = strtok(msg," ");
+        string nickname = strtok(NULL," ");
+        string roomName = strtok(NULL," ");
+        user->setNickname(nickname);
+        for(vector<Room*>::iterator it = roomList->begin(); it != roomList->end(); it++) {
+            if ((*it)->getRoomName() == roomName) {
+                user->setRoom(*it);
+                (*it)->addUser(user);
+                return;
+            }
+        }
+        Room *newRoom = new Room(roomName);
+        newRoom->addUser(user);
+        user->setRoom(newRoom);
         return;
     }
 };
@@ -133,6 +148,10 @@ public:
         return (*user).inRoom();
     }
     void execute(string message, User *user) override {
+        if (!isValid(message, user)) {
+            user->transmit("You need to be in a room to leave a room! .0.");
+            return;
+        }
         cout << "Excecuting Leave\n";
         string returnString = user->getNickname() + " left the room. :(";
         Room *roomToLeave = user->getRoom();
@@ -229,6 +248,9 @@ public:
         returnString += "/HELP: Lists all of the commands, as you see here.\n";
         returnString += "/QUIT: Closes the app.\n";
         returnString += "/WHISPER <nickname> <message>: Sends <message> to the person named <nickname> inside your room.";
+        returnString += "/CHESSRESET: Resets the room's chessboard.\n";
+        returnString += "/CHESSMOVE <Current Column> <Current Row> <Destination Column> <Destination Row>: Moves a piece from current to destination.\n";
+        returnString += "/CHESSPRINT: Prints the chessboard for everyone to see.\n";
         user->transmit(convertString(returnString));
         return;
     }
@@ -294,6 +316,7 @@ public:
             string temp(thirdToken);
             if(name.compare(secondToken) == 0)
                 return (temp.compare("") != 0);
+
         }
         return false;
     }
@@ -319,9 +342,13 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
-        return true;
+        return (*user).inRoom();
     }
     void execute(string message, User *user) override {
+        if (!isValid(message,user)) {
+            user->transmit("You need to be in a room to play chess!");
+            return;
+        }
         cout << "Excecuting ChessReset\n";
         user->currentRoom()->chessResetBoard();
         user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
@@ -339,6 +366,10 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
+        if (!(*user).inRoom()) {
+            user->transmit("You need to be in a room to play chess!");
+            return false;
+        }
         char* msg = new char[message.size()+1];
         try {
             strcpy(msg,message.c_str());
@@ -363,7 +394,6 @@ public:
         if (!isValid(message, user)) {
             return;
         }
-        cout << "wow\n";
         char* msg = new char[message.size()+1];
         strcpy(msg,message.c_str());
         string firstToken = strtok(msg," ");
@@ -371,12 +401,10 @@ public:
         string thirdToken = strtok(NULL," ");
         string forthToken = strtok(NULL," ");
         string fifthToken = strtok(NULL," ");
-        cout << "wow\n";
         int currRow = stoi(secondToken);
         int currCol = stoi(thirdToken);
         int destRow = stoi(forthToken);
         int destCol = stoi(fifthToken);
-        cout << "wow\n";
         user->currentRoom()->chessMovePiece(currRow, currCol, destRow, destCol);
         user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
         return;
@@ -393,9 +421,13 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
-        return true;
+        return (*user).inRoom();
     }
     void execute(string message, User *user) override {
+        if (!isValid(message,user)) {
+            user->transmit("You need to be in a room to play chess!");
+            return;
+        }
         cout << "Excecuting ChessPrint\n";
         user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
         return;
@@ -411,7 +443,7 @@ public:
         return ((message.length() >= 1) && (message.at(0) == '/'));
     }
     bool isValid(string message, User *user) override {
-        return true;
+        return (*user).inRoom();
     }
     void execute(string message, User *user) override {
         cout << "Excecuting UnreCom\n";
@@ -438,4 +470,3 @@ public:
         return;
     }
 };
-
