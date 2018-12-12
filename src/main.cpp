@@ -12,14 +12,20 @@ using namespace std;
 
 
 //read message from client
-string receive(char* buffer,int socket)
+char* receive(char* buffer,int socket)
 {
-    memset(&buffer,0,sizeof(buffer));//reset the buffer
+    memset(buffer,0,sizeof(buffer));//reset the buffer
     read(socket,buffer,1024);
-    string output(buffer);
-    return output;
+    return buffer;
 }
 
+
+int transmit(int socket,char* message)
+{
+    //this method sends messages
+    int output = send(socket,message,strlen(message),0);
+    return output;
+}
 
 
 int main() {
@@ -36,7 +42,7 @@ int main() {
      */
     
     int server_fd;
-    int valread;
+    int new_socket;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
@@ -69,7 +75,7 @@ int main() {
     printf("Waiting for clients to connect...\n");
     listen(server_fd,5);
     printf("the line before accept\n");
-    int new_socket = accept(server_fd, (sockaddr *)&address,(socklen_t*)&addrlen);
+    new_socket = accept(server_fd, (sockaddr *)&address,(socklen_t*)&addrlen);
     if(new_socket < 0)
     {
         printf("Error accepting client\n");
@@ -77,25 +83,17 @@ int main() {
     }
     printf("connection successful\n");
     
-    //valread = read(new_socket,buffer, 1024);
-    string ouput = receive(buffer,new_socket);
-    printf("%s\n",buffer );
-    if(strcmp(buffer,"exit"))
+    char* output = receive(buffer,new_socket);
+    printf("%s\n",output);
+    if(strcmp(output,"exit")==0)
     {
-        printf("exit\n");
+        printf("client exited\n");
         exit(0);
     }
-    send(new_socket,message,strlen(message),0);
+    transmit(new_socket,message);
     printf("Hello message sent\n");
     return 0;
 }
 
 
 
-//
-//int send()
-//{
-//    //this method sends messages
-//
-//    return 0;
-//}

@@ -10,6 +10,8 @@ def listen(s):
     """Takes a socket and listens for messages forever"""
     while True:
         data = s.recv(1024)
+        if not data:
+            return
         message = data.decode('utf-8')
         if message == "\QUIT":
             return
