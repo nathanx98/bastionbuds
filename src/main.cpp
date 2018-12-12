@@ -1,5 +1,6 @@
 #include <iostream>
 #include "commands.cpp"
+#include "room_user.cpp"
 #include <string>
 #include <vector>
 
@@ -12,6 +13,7 @@ bool clientConnecting = false;
 
 int main() {
     vector<Command*> commands{&join, &leave};
+
 
     cout << "Hello, World!" << endl;
     cout << "join matches: " << commands.at(0)->matches("lol") << endl;
