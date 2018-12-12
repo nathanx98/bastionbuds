@@ -10,6 +10,18 @@
 
 using namespace std;
 
+
+//read message from client
+string receive(char* buffer,int socket)
+{
+    memset(&buffer,0,sizeof(buffer));//reset the buffer
+    read(socket,buffer,1024);
+    string output(buffer);
+    return output;
+}
+
+
+
 int main() {
     /*vector<Command*> commands{&join, &leave};
 
@@ -24,13 +36,12 @@ int main() {
      */
     
     int server_fd;
-    int new_socket;
     int valread;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {};
-    char* hello = "BASTIONBUDS";
+    char* message = "BASTIONBUDS";
 
     //socket file descriptor
     server_fd = socket(AF_INET,SOCK_STREAM,0);
@@ -46,7 +57,7 @@ int main() {
     }
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = inet_addr("127.0.0.1");
-    address.sin_port = htons(9001);
+    address.sin_port = htons(9002);
 
     //attach socket to port 8080
     int bind_sd = bind(server_fd,(struct sockaddr*)&address, sizeof(address));
@@ -57,34 +68,28 @@ int main() {
     }
     printf("Waiting for clients to connect...\n");
     listen(server_fd,5);
-    new_socket = accept(server_fd, (struct sockaddr *)&address,(socklen_t*)&addrlen);
+    printf("the line before accept\n");
+    int new_socket = accept(server_fd, (sockaddr *)&address,(socklen_t*)&addrlen);
     if(new_socket < 0)
     {
         printf("Error accepting client\n");
         exit(1);
     }
-    //successfully connected to client
-    valread = read(new_socket,buffer, 1024);
+    printf("connection successful\n");
+    
+    //valread = read(new_socket,buffer, 1024);
+    string ouput = receive(buffer,new_socket);
     printf("%s\n",buffer );
-    
-    if(strcmp(buffer,"exit")){
-        printf("exiting\n");
-        exit(1);
+    if(strcmp(buffer,"exit"))
+    {
+        printf("exit\n");
+        exit(0);
     }
-    
-    send(new_socket,hello,strlen(hello),0);
+    send(new_socket,message,strlen(message),0);
     printf("Hello message sent\n");
     return 0;
 }
 
-//read message from client
-//string receive(char* buffer,char* socket)
-//{
-//    memset(&buffer,0,sizeof(buffer));//reset the buffer
-//    read(socket,buffer,1024);
-//    return buffer;
-//}
-//
 
 
 //
