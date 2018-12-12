@@ -6,10 +6,11 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <arpa/inet.h>
 
 using namespace std;
 
-int main(int argc, char const *argv[]) {
+int main() {
     /*vector<Command*> commands{&join, &leave};
 
     cout << "Hello, World!" << endl;
@@ -44,8 +45,8 @@ int main(int argc, char const *argv[]) {
         exit(EXIT_FAILURE);
     }
     address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(8080);
+    address.sin_addr.s_addr = inet_addr("127.0.0.1");
+    address.sin_port = htons(9001);
 
     //attach socket to port 8080
     int bind_sd = bind(server_fd,(struct sockaddr*)&address, sizeof(address));
@@ -56,14 +57,40 @@ int main(int argc, char const *argv[]) {
     }
     printf("Waiting for clients to connect...\n");
     listen(server_fd,5);
-    
     new_socket = accept(server_fd, (struct sockaddr *)&address,(socklen_t*)&addrlen);
+    if(new_socket < 0)
+    {
+        printf("Error accepting client\n");
+        exit(1);
+    }
+    //successfully connected to client
+    valread = read(new_socket,buffer, 1024);
+    printf("%s\n",buffer );
     
-    valread = read(new_socket,buffer,1024);
-    printf("%s/n",buffer);
+    if(strcmp(buffer,"exit")){
+        printf("exiting\n");
+        exit(1);
+    }
+    
     send(new_socket,hello,strlen(hello),0);
     printf("Hello message sent\n");
     return 0;
-
-
 }
+
+//read message from client
+//string receive(char* buffer,char* socket)
+//{
+//    memset(&buffer,0,sizeof(buffer));//reset the buffer
+//    read(socket,buffer,1024);
+//    return buffer;
+//}
+//
+
+
+//
+//int send()
+//{
+//    //this method sends messages
+//
+//    return 0;
+//}
