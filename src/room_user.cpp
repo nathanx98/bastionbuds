@@ -62,7 +62,24 @@ public:
         nickname = "";
         room = NULL;
     }
-
+    /*
+     * @param  a pointer for the room the user should change to
+     */
+    void setRoom(Room* newRoom) {
+        room = newRoom;
+    }
+    /*
+     * @param  a name that the user will be nicknamed
+     */
+    void setNickname(string newNickname) {
+        nickname = newNickname;
+    }
+    /*
+     * @return  the nickname of the user
+     */
+    string getNickname() {
+        return nickname;
+    }
     /*
      * @return  the socket that is associated to this user
      */

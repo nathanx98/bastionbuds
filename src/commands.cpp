@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string>
+#include <string.h>
 #include <vector>
 using namespace std;
 
@@ -44,14 +44,33 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
+        //TODO: Raymond plz do regex, k thx
+        /*
         string firstWord = message.substr(0, message.find(" "));
-        if (firstWord.length() >= (message.length() - 1)) {
+        if (firstWord.length() >= (message.length())) {
+            cout << "1\n";
             return false;
         }
         string secondWord = message.substr(message.find(" "), message.length());
-        return ((firstWord.compare(commandSyntax) == 0) && (secondWord.compare("") != 0 ));
+        string thirdWord = message.substr(message.find(" "), message.length());
+        thirdWord = message.substr(0, message.find(" "));
+        secondWord = secondWord.substr(0,message.find(" "));
+        if (secondWord.length() + firstWord.length() >= (message.length())) {
+            cout << "2\n";
+            return false;
+        }
+        if (secondWord.length() + firstWord.length() + thridWord >= (message.length())) {
+            cout << "3\n";
+            return false;
+        }
+        return ((secondWord.compare("") != 0 ) && (thirdWord.compare("") != 0 ));
+        */
+        return false;
     }
     string execute(string message, User *user) override {
+        string nickname = "";
+        string room = "";
+        //TODO: Raymond plz do regex, k thx
         //TODO
         return" Executing Join";
     }
@@ -88,8 +107,14 @@ public:
         return true;
     }
     string execute(string message, User *user) override {
-        //TODO
-        return "Executing Rooms";
+        string returnString = "Current Rooms: ";
+        if (roomList->size() <= 0) {
+            return "Sorry, no rooms yet!";
+        }
+        for(vector<Room*>::iterator it = roomList->begin(); it != roomList->end(); it++) {
+            returnString += (**it).getRoomName() + " ";
+        }
+        return returnString;
     }
 };
 class Who: public Command {
@@ -103,11 +128,20 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
-        return true;
+        return (*user).inRoom();
     }
     string execute(string message, User *user) override {
-        //TODO
-        return "Executing Who";
+        if (!isValid(message, user)){
+            return "";
+        }
+        string returnString = "Here are all of the users in " + user->currentRoom()->getRoomName() + ": ";
+        if (user->currentRoom()->listOfUsers.size() <= 0) {
+            return "Wait a minute, no one is in this room?!?";
+        }
+        for(vector<User*>::iterator it = user->currentRoom()->listOfUsers.begin(); it != user->currentRoom()->listOfUsers.end(); it++) {
+            returnString += (**it).getNickname() + " ";
+        }
+        return returnString;
     }
 };
 class Help: public Command {
@@ -124,8 +158,14 @@ public:
         return true;
     }
     string execute(string message, User *user) override {
-        //TODO
-        return "Executing Help";
+        string returnString = "/JOIN <nickname> <room>: Joins <room> under the name <nickname>. Creates <room> if a room of that name does not exist.\n";
+        returnString += "/ROOMS: Lists out all of the current rooms.\n";
+        returnString += "/LEAVE: Leaves the current room you are in.\n";
+        returnString += "/WHO: Displays all of the users in your current room.\n";
+        returnString += "/HELP: Lists all of the commands, as you see here.\n";
+        returnString += "/QUIT: Closes the app.\n";
+        returnString += "/WHISPER <nickname> <message>: Sends <message> to the person named <nickname> inside your room.";
+        return returnString;
     }
 };
 class Quit: public Command {
@@ -157,11 +197,18 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
+        //TODO: Raymond plz do regex, k thx
+    /*
         string firstWord = message.substr(0, message.find(" "));
         string secondWord = message.substr(message.find(" "), message.length());
         return ((firstWord.compare(commandSyntax) == 0) && (secondWord.compare("") != 0 ));
+        */
+        return false;
     }
     string execute(string message, User *user) override {
+        //TODO: Raymond plz do regex, k thx
+        string nickname = "";
+        string messageToSend = "";
         //TODO
         return "Executing Whisper";
     }
@@ -173,7 +220,7 @@ public:
         roomList = rl;
     }
     bool matches(string message) override {
-        return false;
+        return ((message.length() >= 1) && (message.at(0) == '/'));
     }
     bool isValid(string message, User *user) override {
         return true;

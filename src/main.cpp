@@ -43,30 +43,58 @@ int main() {
     UnreCom unreCom = UnreCom(&roomList);
     Message message = Message(&roomList);
 
-    vector<Command*> commands{&join, &leave};
+    vector<Command*> commands{&join, &leave, &rooms, &who, &help, &quit, &whisper, &unreCom, &message};
     User gerald = User(12);
     Room room = Room("the_wOw_room");
 
     cout << "room name: " << room.getRoomName() << endl;
     cout << "room size: " << room.listOfUsers.size() << endl;
     room.addUser(&gerald);
+    gerald.setRoom(&room);
+    gerald.setNickname("gerald");
     cout << "room size: " << room.listOfUsers.size() << endl;
-    room.removeUser(&gerald);
+    //room.removeUser(&gerald);
     cout << "room size: " << room.listOfUsers.size() << endl;
-    room.removeUser(&gerald);
+    //room.removeUser(&gerald);
     cout << "room size: " << room.listOfUsers.size() << endl;
-
-    string word = "woah!";
-    cout << word.substr(0, word.find(" ")) << endl;
+    roomList.push_back(&room);
 
     cout << "Hello, World!" << endl;
     cout << "join matches: " << commands.at(0)->matches("lol") << endl;
-    cout << "join isValid: " << commands.at(0)->isValid("lol", &gerald) << endl;
+    cout << "join isValid: " << commands.at(0)->isValid("lol a  a a   ", &gerald) << endl;
     cout << "join execute: " << commands.at(0)->execute("lol", &gerald) << endl;
 
     cout << "leave matches: " << commands.at(1)->matches("lol") << endl;
     cout << "leave isValid: " << commands.at(1)->isValid("lol", &gerald) << endl;
     cout << "leave execute: " << commands.at(1)->execute("lol", &gerald) << endl;
+
+    cout << "rooms matches: " << commands.at(2)->matches("lol") << endl;
+    cout << "rooms isValid: " << commands.at(2)->isValid("lol", &gerald) << endl;
+    cout << "rooms execute: " << commands.at(2)->execute("lol", &gerald) << endl;
+
+    cout << "who matches: " << commands.at(3)->matches("lol") << endl;
+    cout << "who isValid: " << commands.at(3)->isValid("lol", &gerald) << endl;
+    cout << "who execute: " << commands.at(3)->execute("lol", &gerald) << endl;
+
+    cout << "help matches: " << commands.at(4)->matches("lol") << endl;
+    cout << "help isValid: " << commands.at(4)->isValid("lol", &gerald) << endl;
+    cout << "help execute: " << commands.at(4)->execute("lol", &gerald) << endl;
+
+    cout << "quit matches: " << commands.at(5)->matches("lol") << endl;
+    cout << "quit isValid: " << commands.at(5)->isValid("lol", &gerald) << endl;
+    cout << "quit execute: " << commands.at(5)->execute("lol", &gerald) << endl;
+
+    cout << "whisper matches: " << commands.at(6)->matches("lol") << endl;
+    cout << "whisper isValid: " << commands.at(6)->isValid("lol", &gerald) << endl;
+    cout << "whisper execute: " << commands.at(6)->execute("lol", &gerald) << endl;
+
+    cout << "unreCom matches: " << commands.at(7)->matches("lol") << endl;
+    cout << "unreCom isValid: " << commands.at(7)->isValid("lol", &gerald) << endl;
+    cout << "unreCom execute: " << commands.at(7)->execute("lol", &gerald) << endl;
+
+    cout << "message matches: " << commands.at(8)->matches("lol") << endl;
+    cout << "message isValid: " << commands.at(8)->isValid("lol", &gerald) << endl;
+    cout << "message execute: " << commands.at(8)->execute("lol", &gerald) << endl;
 
 
     
@@ -76,7 +104,7 @@ int main() {
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {};
-    char* message = "BASTIONBUDS";
+    //char* message = "BASTIONBUDS";
     
     //socket file descriptor
     server_fd = socket(AF_INET,SOCK_STREAM,0);
@@ -119,8 +147,9 @@ int main() {
         printf("client exited\n");
         exit(0);
     }
-    transmit(new_socket,message);
-    printf("Hello message sent\n");
+    //These lines were commented out, as message conflicts with the message command
+    //transmit(new_socket,message);
+    //printf("Hello message sent\n");
 
 
 
@@ -140,7 +169,7 @@ int main() {
             //TODO: Add client to global list of users
 
             //TODO: Spawn Listen thread
-            bool connectionSuccessful = create_thread();
+            bool connectionSuccessful = true;
 
             if (connectionSuccessful)   {cout << "Client successfully connected to sever!" << endl;}
             else                        {cout << "Client could not connect to server!" << endl;}
@@ -150,6 +179,7 @@ int main() {
 
 
     return 0;
+}
 }
 
 
