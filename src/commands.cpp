@@ -239,13 +239,9 @@ public:
         returnString += "/WHO: Displays all of the users in your current room.\n";
         returnString += "/HELP: Lists all of the commands, as you see here.\n";
         returnString += "/QUIT: Closes the app.\n";
-        returnString += "/WHISPER <nickname> <message>: Sends <message> to the person named <nickname> inside your room.";
+        returnString += "/WHISPER <nickname> <message>: Sends <message> to the person named <nickname> inside your room.\N";
         returnString += "/CHESSRESET: Resets the room's chessboard.\n";
         returnString += "/CHESSMOVE <Current Column> <Current Row> <Destination Column> <Destination Row>: Moves a piece from current to destination.\n";
-        returnString += "/CHESSPRINT: Prints the chessboard for everyone to see.";
-        //user->transmit(convertString(returnString));
-        //int sock = user->getSocket();
-        //send(sock,convertString(returnString),strlen(convertString(returnString)),0);
         user->transmit(convertString(returnString));
         return;
     }
