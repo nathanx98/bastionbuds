@@ -1,7 +1,7 @@
 import argparse
 import npyscreen
 import socket
-import sys
+import os
 import time
 
 from threading import Thread
@@ -64,12 +64,11 @@ def listen(chatForm, s):
 
         # this usually happens when the server disconnects
         if not data:
-            sys.exit(0)
+            os._exit(0)
 
         message = data.decode('utf-8')
         if message == "/QUIT":
-            sys.exit(0)
-        else:
+            os._exit(0)
 
 
         # display message to the user
