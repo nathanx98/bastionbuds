@@ -252,10 +252,12 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
+        //The user can always use quit
         return true;
     }
     void execute(string message, User *user) override {
         cout << "Excecuting Quit\n";
+        //Sends /QUIT to the client, informing the client that it is okay to quit now.
         user->transmit("/QUIT");
         return;
     }
@@ -275,7 +277,7 @@ public:
             user->transmit("You whisper to yourself. In order to whisper to someone else, /JOIN a room!");
             return false;
         }
-        char* msg = new char[message.size()+1];   //message.size() or size+1?
+        char* msg = new char[message.size()+1];   //message.size()+1
         strcpy(msg,message.c_str());
         char* firstToken;
         char* secondToken;
@@ -285,12 +287,14 @@ public:
         secondToken = strtok(NULL," ");    //name, breaks here
         if(secondToken == NULL)
         {
+            //This happens whisper is missing the second argument
             user->transmit("Not enough arguments");
             return false;
         }
         thirdToken = strtok(NULL," ");     //actual message
         if(thirdToken == NULL)
         {
+            //This happens whisper is missing the last argument
             user->transmit("Not enough arguments");
             return false;
         }
@@ -298,6 +302,7 @@ public:
         {
             string name = list[i]->nickname;
             string temp(thirdToken);
+            //This will return false if the user is not in the room, or no name was given.
             if(name.compare(secondToken) == 0)
                 return (temp.compare("") != 0);
 
@@ -316,6 +321,7 @@ public:
         string nickname = strtok(NULL," ");
         string messageToSend = message.substr(nickname.length()+firstToken.length()+1, message.length());
         Room *room = user->getRoom();
+        //Search the room for the targeted user, and send them the whisper message
         for (vector<User*>::iterator it = room->listOfUsers.begin(); it != room->listOfUsers.end(); it++) {
             if ((**it).getNickname() == nickname) {
                 string receiverString = "[" + user->getNickname() + " whispers to you] " + messageToSend;
@@ -325,6 +331,7 @@ public:
                 return;
             }
         }
+        //Informs the user that that person is not in the room
         user->transmit(convertString(nickname + " is not in this room! ;_;"));
         return;
     }
@@ -340,15 +347,18 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
+        //The user is only allowed to run chess commands when they are in a room.
         return (*user).inRoom();
     }
     void execute(string message, User *user) override {
         if (!isValid(message,user)) {
+            //Inform the user they must be in a room to play chess.
             user->transmit("You need to be in a room to play chess!");
             return;
         }
         cout << "Excecuting ChessReset\n";
         user->currentRoom()->chessResetBoard();
+        //Print the chessboard
         user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
         return;
     }
@@ -365,11 +375,13 @@ public:
     }
     bool isValid(string message, User *user) override {
         if (!(*user).inRoom()) {
+            //Inform the user they must be in a room to play chess.
             user->transmit("You need to be in a room to play chess!");
             return false;
         }
         char* msg = new char[message.size()+1];
         try {
+            //Check to see if the user sent 4 int tokens for the chess piece to move by
             strcpy(msg,message.c_str());
             string firstToken = strtok(msg," ");
             string secondToken = strtok(NULL," ");
@@ -394,6 +406,7 @@ public:
         }
         char* msg = new char[message.size()+1];
         strcpy(msg,message.c_str());
+        //Get the poistion the chess piece starts at and mvoes to
         string firstToken = strtok(msg," ");
         string secondToken = strtok(NULL," ");
         string thirdToken = strtok(NULL," ");
@@ -403,7 +416,9 @@ public:
         int currCol = stoi(thirdToken);
         int destRow = stoi(forthToken);
         int destCol = stoi(fifthToken);
+        //Move the chess piece
         user->currentRoom()->chessMovePiece(currRow, currCol, destRow, destCol);
+        //Print the chess board
         user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
         return;
     }
@@ -419,14 +434,17 @@ public:
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
+        //ChessPrint will be valid if the user is in a room
         return (*user).inRoom();
     }
     void execute(string message, User *user) override {
         if (!isValid(message,user)) {
+            //Inform the user they must be in a room to play chess.
             user->transmit("You need to be in a room to play chess!");
             return;
         }
         cout << "Excecuting ChessPrint\n";
+        //Print the chess board
         user->currentRoom()->broadcastInRoom(convertString(user->currentRoom()->chessBoardString()));
         return;
     }
@@ -438,13 +456,16 @@ public:
         roomList = rl;
     }
     bool matches(string message) override {
+        //An UnrecCommand will always match the criteria if its tarts with /
         return ((message.length() >= 1) && (message.at(0) == '/'));
     }
     bool isValid(string message, User *user) override {
         return (*user).inRoom();
     }
     void execute(string message, User *user) override {
+
         cout << "Excecuting UnreCom\n";
+        //UnreCom will transmit to the user that they typed an incorrect command
         user->transmit("The command you attempted does not exist (Oh no!). Type /HELP for a list of usable commands");
         return;
     }
@@ -456,17 +477,21 @@ public:
         roomList = rl;
     }
     bool matches(string message) override {
+        //Message will always be in the correct format, and match
         return true;
     }
     bool isValid(string message, User *user) override {
+        //Message will always be valid if the user is inside a room
         return (*user).inRoom();
     }
     void execute(string message, User *user) override {
         if (!isValid(message, user)) {
+            //Tell the user if they are not in a room.
             user->transmit("You need to be in a room to talk with people! Try using /JOIN and makes some friends!");
             return;
         }
         cout << "Excecuting Message\n";
+        //Transmit the message to everyone in the room.
         string returnString = "[" + user->getNickname() + "] " + message;
         user->getRoom()->broadcastInRoom(convertString(returnString));
         return;
