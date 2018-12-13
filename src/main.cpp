@@ -12,16 +12,23 @@
 
 using namespace std;
 
+int BUFFER_SIZE = 4096;
+
+struct client_args{
+    User *user;
+    vector<Command*> commands;
+};
+
 
 vector<Room*> roomList;
-vector<Command*> commands;
+//vector<Command*> commands;
 pthread_mutex_t lock = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 
 char* receive(char* buffer,int socket)
 {
     int a = sizeof(buffer);
     memset(buffer,0,a);//reset the buffer
-    read(socket,buffer,1024);
+    read(socket,buffer,BUFFER_SIZE);
     return buffer;
 }
 
@@ -37,13 +44,39 @@ int transmit(int socket,char* message)
 
 void *client_run(void *arg)
 {
-    User *user = (User*)arg;
+    cout << "1\n";
+    cout<<"real beginning"<<endl;
+    cout << "2\n";
+    struct client_args *args = (client_args*)arg;
+    cout << "3\n";
+    User * user = args->user;
+    Join *join = new Join(&roomList);
+    Leave *leave = new Leave(&roomList);
+    Rooms *rooms = new Rooms(&roomList);
+    Who *who = new Who(&roomList);
+    Help *help = new Help(&roomList);
+    Quit *quit = new Quit(&roomList);
+    Whisper *whisper = new Whisper(&roomList);
+    ChessReset *chessReset = new ChessReset(&roomList);
+    ChessMove *chessMove = new ChessMove(&roomList);
+    ChessPrint *chessPrint = new ChessPrint(&roomList);
+    UnreCom *unreCom = new UnreCom(&roomList);
+    Message *message = new Message(&roomList);
+    vector<Command*> commands{join, leave, rooms, who, help, quit, whisper, chessReset, chessMove, chessPrint, unreCom, message};
+
+
     int socket = user->getSocket();
+    //cout<<"beginning of client_run"<<endl;
     while(1)
     {
-        char* buf = receive(buf,socket);
+        char* buf = new char[BUFFER_SIZE];
+        //cout << "before receive" << endl;
+        buf = receive(buf,socket);
+        //cout << "after receive" << endl;
+        //cout << commands.size() << endl;
         for(int i=0;i<commands.size();i++)
         {
+            string strBuf = buf;
             if(commands[i]->matches(buf)) {
                 pthread_mutex_lock(&lock);
                 commands[i]->execute(buf,user);
@@ -59,19 +92,19 @@ void *client_run(void *arg)
 
 
 int main() {
-    Join join = Join(&roomList);
-    Leave leave = Leave(&roomList);
-    Rooms rooms = Rooms(&roomList);
-    Who who = Who(&roomList);
-    Help help = Help(&roomList);
-    Quit quit = Quit(&roomList);
-    Whisper whisper = Whisper(&roomList);
-    ChessReset chessReset = ChessReset(&roomList);
-    ChessMove chessMove = ChessMove(&roomList);
-    ChessPrint chessPrint = ChessPrint(&roomList);
-    UnreCom unreCom = UnreCom(&roomList);
-    Message message = Message(&roomList);
-    vector<Command*> commands{&join, &leave, &rooms, &who, &help, &quit, &whisper, &chessReset, &chessMove, &chessPrint, &unreCom, &message};
+    Join *join = new Join(&roomList);
+    Leave *leave = new Leave(&roomList);
+    Rooms *rooms = new Rooms(&roomList);
+    Who *who = new Who(&roomList);
+    Help *help = new Help(&roomList);
+    Quit *quit = new Quit(&roomList);
+    Whisper *whisper = new Whisper(&roomList);
+    ChessReset *chessReset = new ChessReset(&roomList);
+    ChessMove *chessMove = new ChessMove(&roomList);
+    ChessPrint *chessPrint = new ChessPrint(&roomList);
+    UnreCom *unreCom = new UnreCom(&roomList);
+    Message *message = new Message(&roomList);
+    vector<Command*> commands{join, leave, rooms, who, help, quit, whisper, chessReset, chessMove, chessPrint, unreCom, message};
 
 
 
@@ -113,6 +146,7 @@ int main() {
     cout << "room size: " << room.listOfUsers.size() << endl;
     roomList.push_back(&room);
     */
+    /*
     cout << "Hello, World!" << endl;
     cout << "join matches: " << commands.at(0)->matches("lol") << endl;
     cout << "join isValid: " << commands.at(0)->isValid("/JOIN 0v0b 0 0", gerald) << endl;
@@ -149,7 +183,7 @@ int main() {
     cout << "message matches: " << commands.at(8)->matches("lol") << endl;
     cout << "message isValid: " << commands.at(8)->isValid("lol", gerald) << endl;
     //cout << "message execute: " << commands.at(8)->execute("lol", &gerald) << endl;
-
+*/
 
     
     int server_fd;
@@ -157,6 +191,7 @@ int main() {
     int opt = 1;
     int addrlen = sizeof(address);
 
+    
     
     //socket file descriptor
     server_fd = socket(AF_INET,SOCK_STREAM,0);
@@ -172,7 +207,7 @@ int main() {
     }
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = inet_addr("127.0.0.1");
-    address.sin_port = htons(9002);
+    address.sin_port = htons(9003);
     
     //attach socket to port 8080
     int bind_sd = bind(server_fd,(struct sockaddr*)&address, sizeof(address));
@@ -200,12 +235,17 @@ int main() {
         //TODO: Spawn Listen thread
         pthread_t p1;
         int rc;
-        rc = pthread_create(&p1,NULL,client_run,user);
-
-
+        cout<<"before thread"<<endl;
+        cout << commands.size() << endl;
+        struct client_args args = {user, commands};
+        cout <<"a4\n";
+        rc = pthread_create(&p1,NULL,client_run,&args);
+        cout <<"a5\n";
+        cout<<"after thread"<<endl;
     }
     return 0;
 
+    
 }
 
 
