@@ -44,11 +44,7 @@ int transmit(int socket,char* message)
 
 void *client_run(void *arg)
 {
-    cout << "1\n";
-    cout<<"real beginning"<<endl;
-    cout << "2\n";
     struct client_args *args = (client_args*)arg;
-    cout << "3\n";
     User * user = args->user;
     Join *join = new Join(&roomList);
     Leave *leave = new Leave(&roomList);
@@ -66,15 +62,12 @@ void *client_run(void *arg)
 
 
     int socket = user->getSocket();
-    //cout<<"beginning of client_run"<<endl;
+    int i = 0;
     while(1)
     {
         char* buf = new char[BUFFER_SIZE];
-        //cout << "before receive" << endl;
         buf = receive(buf,socket);
-        //cout << "after receive" << endl;
-        //cout << commands.size() << endl;
-        for(int i=0;i<commands.size();i++)
+        for(i=0;i<commands.size();i++)
         {
             string strBuf = buf;
             if(commands[i]->matches(buf)) {
@@ -84,6 +77,7 @@ void *client_run(void *arg)
                 break;
             }
         }
+        if(i == 5) break;
     }
     return NULL;
 }
@@ -224,7 +218,6 @@ int main() {
         *  This will loop indefinetly, until the user closes using "CTRL-C"
         *  This can be changed later to stop under certain conditions
         */
-        
         int new_socket = accept(server_fd, (sockaddr *)&address,(socklen_t*)&addrlen);
         if(new_socket < 0)
         {
@@ -232,16 +225,9 @@ int main() {
             exit(1);
         }
         User *user = new User(new_socket);
-        //TODO: Spawn Listen thread
         pthread_t p1;
-        int rc;
-        cout<<"before thread"<<endl;
-        cout << commands.size() << endl;
         struct client_args args = {user, commands};
-        cout <<"a4\n";
-        rc = pthread_create(&p1,NULL,client_run,&args);
-        cout <<"a5\n";
-        cout<<"after thread"<<endl;
+        pthread_create(&p1,NULL,client_run,&args);
     }
     return 0;
 

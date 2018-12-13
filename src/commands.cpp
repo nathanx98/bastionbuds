@@ -269,7 +269,6 @@ public:
         cout << "Excecuting Quit\n";
         //TODO
         user->transmit("Goodbye!");
-        return;
     }
 };
 class Whisper: public Command {
