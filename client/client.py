@@ -94,7 +94,7 @@ def execute_script(chatForm, s, script_fn):
 
     for line in script.readlines():
         # Sleep a little to give time for UI to process and the like.
-        time.sleep(0.5)
+        time.sleep(1)
 
         if len(line) > BUFFER_SIZE:
             chatForm.receive_box.values.append(

@@ -256,7 +256,6 @@ public:
     }
     void execute(string message, User *user) override {
         cout << "Excecuting Quit\n";
-        user->transmit("Goodbye!");
         user->transmit("/QUIT");
         return;
     }
