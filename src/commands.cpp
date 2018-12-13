@@ -2,6 +2,11 @@
 #include <string.h>
 #include <vector>
 #include <stdio.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <pthread.h>
 
 using namespace std;
 
@@ -233,13 +238,18 @@ public:
         roomList = rl;
     }
     bool matches(string message) override {
+        cout<<"first line in MATCHES"<<endl;
+
         string firstWord = message.substr(0, message.find(" "));
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
+        cout<<"first line in ISVALID"<<endl;
+
         return true;
     }
     void execute(string message, User *user) override {
+        cout<<"first line in execute"<<endl;
         cout << "Excecuting Help\n";
         string returnString = "/JOIN <nickname> <room>: Joins <room> under the name <nickname>. Creates <room> if a room of that name does not exist.\n";
         returnString += "/ROOMS: Lists out all of the current rooms.\n";
@@ -251,7 +261,12 @@ public:
         returnString += "/CHESSRESET: Resets the room's chessboard.\n";
         returnString += "/CHESSMOVE <Current Column> <Current Row> <Destination Column> <Destination Row>: Moves a piece from current to destination.\n";
         returnString += "/CHESSPRINT: Prints the chessboard for everyone to see.\n";
-        user->transmit(convertString(returnString));
+        //user->transmit(convertString(returnString));
+        cout<<"before sock"<<endl;
+        int sock = user->getSocket();
+        cout<<"after sock"<<endl;
+        send(sock,convertString(returnString),strlen(convertString(returnString)),0);
+        cout<<"after send"<<endl;
         return;
     }
 };

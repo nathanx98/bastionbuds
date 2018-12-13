@@ -63,7 +63,7 @@ public:
 
     int transmit(char* message)
     {
-        int output = send(socket,message,strlen(message),0);
+        int output = send(socket,(char*)&message,strlen(message),0);
         return output;
     }
 

@@ -1,6 +1,6 @@
 CXX=g++
-CXXFLAGS += -g -Wall -Wextra -pthread
-CPPFLAGS += -isystem src -std=c++17
+CXXFLAGS += -g -Wall -Wextra -pthread 
+CPPFLAGS += -isystem src -std=c++17 -ggdb
 
 MKDIR_P = mkdir -p
 OBJ_DIR = obj
