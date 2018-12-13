@@ -220,18 +220,13 @@ public:
         roomList = rl;
     }
     bool matches(string message) override {
-        cout<<"first line in MATCHES"<<endl;
-
         string firstWord = message.substr(0, message.find(" "));
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
-        cout<<"first line in ISVALID"<<endl;
-
         return true;
     }
     void execute(string message, User *user) override {
-        cout<<"first line in execute"<<endl;
         cout << "Excecuting Help\n";
         string returnString = "/JOIN <nickname> <room>: Joins <room> under the name <nickname>. Creates <room> if a room of that name does not exist.\n";
         returnString += "/ROOMS: Lists out all of the current rooms.\n";
