@@ -51,8 +51,6 @@ public:
     }
     string commandSyntax = "/JOIN";
     bool matches(string message) override {
-        cout << "wow\n";
-        sleep(1);
         string firstWord = message.substr(0, message.find(" "));
         return (firstWord.compare(commandSyntax) == 0);
     }
