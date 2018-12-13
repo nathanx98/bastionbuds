@@ -48,7 +48,21 @@ void *client_run(void *arg)
     struct client_args *args = (client_args*)arg;
     cout << "3\n";
     User * user = args->user;
-    vector<Command*> commands = args->commands;
+    Join *join = new Join(&roomList);
+    Leave *leave = new Leave(&roomList);
+    Rooms *rooms = new Rooms(&roomList);
+    Who *who = new Who(&roomList);
+    Help *help = new Help(&roomList);
+    Quit *quit = new Quit(&roomList);
+    Whisper *whisper = new Whisper(&roomList);
+    ChessReset *chessReset = new ChessReset(&roomList);
+    ChessMove *chessMove = new ChessMove(&roomList);
+    ChessPrint *chessPrint = new ChessPrint(&roomList);
+    UnreCom *unreCom = new UnreCom(&roomList);
+    Message *message = new Message(&roomList);
+    vector<Command*> commands{join, leave, rooms, who, help, quit, whisper, chessReset, chessMove, chessPrint, unreCom, message};
+
+
     int socket = user->getSocket();
     cout<<"beginning of client_run"<<endl;
     while(1)
@@ -82,19 +96,19 @@ void *client_run(void *arg)
 
 
 int main() {
-    Join join = Join(&roomList);
-    Leave leave = Leave(&roomList);
-    Rooms rooms = Rooms(&roomList);
-    Who who = Who(&roomList);
-    Help help = Help(&roomList);
-    Quit quit = Quit(&roomList);
-    Whisper whisper = Whisper(&roomList);
-    ChessReset chessReset = ChessReset(&roomList);
-    ChessMove chessMove = ChessMove(&roomList);
-    ChessPrint chessPrint = ChessPrint(&roomList);
-    UnreCom unreCom = UnreCom(&roomList);
-    Message message = Message(&roomList);
-    vector<Command*> commands{&join, &leave, &rooms, &who, &help, &quit, &whisper, &chessReset, &chessMove, &chessPrint, &unreCom, &message};
+    Join *join = new Join(&roomList);
+    Leave *leave = new Leave(&roomList);
+    Rooms *rooms = new Rooms(&roomList);
+    Who *who = new Who(&roomList);
+    Help *help = new Help(&roomList);
+    Quit *quit = new Quit(&roomList);
+    Whisper *whisper = new Whisper(&roomList);
+    ChessReset *chessReset = new ChessReset(&roomList);
+    ChessMove *chessMove = new ChessMove(&roomList);
+    ChessPrint *chessPrint = new ChessPrint(&roomList);
+    UnreCom *unreCom = new UnreCom(&roomList);
+    Message *message = new Message(&roomList);
+    vector<Command*> commands{join, leave, rooms, who, help, quit, whisper, chessReset, chessMove, chessPrint, unreCom, message};
 
 
 
