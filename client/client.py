@@ -27,11 +27,11 @@ class ChatForm(npyscreen.ActionFormMinimal):
         # above send_box) can fill the terminal
         self.send_box = self.add(MultiLineEditBoxed, autowrap=False, max_height=5, rely=-7)
         self.receive_box = self.add(npyscreen.Pager, values=[], rely=1,
-                                    max_height=self.curses_pad.getmaxyx()[0] - 7, editable=False)
+                                    max_height=self.curses_pad.getmaxyx()[0] - 8)
 
     def on_ok(self):
         """When user presses Send, this function sends the command to the server."""
-        command = self.send_box.entry_widget.value
+        command = self.send_box.entry_widget.value.strip()
         if len(command) > BUFFER_SIZE:
             self.receive_box.values.append(
                 'Sorry, your text cannot be greater than {} characters long. Please try again.'
@@ -69,10 +69,13 @@ def listen(chatForm, s):
         message = data.decode('utf-8')
         if message == "/QUIT":
             sys.exit(0)
+        else:
+
 
         # display message to the user
         for line in message.splitlines():
             chatForm.receive_box.values.append(line)
+            chatForm.receive_box.h_show_end(line)
         # force the terminal UI to refresh
         chatForm.display()
 
