@@ -8,7 +8,7 @@ from threading import Thread
 
 
 DEFAULT_IP = "127.0.0.1"
-DEFAULT_PORT = 9001
+DEFAULT_PORT = 9003
 BUFFER_SIZE = 4096
 
 
@@ -39,7 +39,6 @@ class ChatForm(npyscreen.ActionFormMinimal):
         else:
             s.send(command.encode())
         self.send_box.entry_widget.value = ''
-
 
 
 class ChatApplication(npyscreen.NPSAppManaged):
