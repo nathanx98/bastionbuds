@@ -51,8 +51,6 @@ public:
     }
     string commandSyntax = "/JOIN";
     bool matches(string message) override {
-        cout << "wow\n";
-        sleep(1);
         string firstWord = message.substr(0, message.find(" "));
         return (firstWord.compare(commandSyntax) == 0);
     }
@@ -222,18 +220,13 @@ public:
         roomList = rl;
     }
     bool matches(string message) override {
-        cout<<"first line in MATCHES"<<endl;
-
         string firstWord = message.substr(0, message.find(" "));
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
-        cout<<"first line in ISVALID"<<endl;
-
         return true;
     }
     void execute(string message, User *user) override {
-        cout<<"first line in execute"<<endl;
         cout << "Excecuting Help\n";
         string returnString = "/JOIN <nickname> <room>: Joins <room> under the name <nickname>. Creates <room> if a room of that name does not exist.\n";
         returnString += "/ROOMS: Lists out all of the current rooms.\n";
@@ -241,13 +234,9 @@ public:
         returnString += "/WHO: Displays all of the users in your current room.\n";
         returnString += "/HELP: Lists all of the commands, as you see here.\n";
         returnString += "/QUIT: Closes the app.\n";
-        returnString += "/WHISPER <nickname> <message>: Sends <message> to the person named <nickname> inside your room.";
+        returnString += "/WHISPER <nickname> <message>: Sends <message> to the person named <nickname> inside your room.\N";
         returnString += "/CHESSRESET: Resets the room's chessboard.\n";
         returnString += "/CHESSMOVE <Current Column> <Current Row> <Destination Column> <Destination Row>: Moves a piece from current to destination.\n";
-        returnString += "/CHESSPRINT: Prints the chessboard for everyone to see.";
-        //user->transmit(convertString(returnString));
-        //int sock = user->getSocket();
-        //send(sock,convertString(returnString),strlen(convertString(returnString)),0);
         user->transmit(convertString(returnString));
         return;
     }
@@ -267,8 +256,9 @@ public:
     }
     void execute(string message, User *user) override {
         cout << "Excecuting Quit\n";
-        //TODO
         user->transmit("Goodbye!");
+        user->transmit("/QUIT");
+        return;
     }
 };
 class Whisper: public Command {
@@ -325,7 +315,7 @@ public:
         strcpy(msg,message.c_str());
         string firstToken = strtok(msg," ");
         string nickname = strtok(NULL," ");
-        string messageToSend = strtok(NULL," ");
+        string messageToSend = message.substr(nickname.length()+firstToken.length()+1, message.length());
         Room *room = user->getRoom();
         for (vector<User*>::iterator it = room->listOfUsers.begin(); it != room->listOfUsers.end(); it++) {
             if ((**it).getNickname() == nickname) {

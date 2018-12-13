@@ -1,7 +1,7 @@
 import argparse
 import npyscreen
 import socket
-import sys
+import os
 import time
 
 from threading import Thread
@@ -26,11 +26,12 @@ class ChatForm(npyscreen.ActionFormMinimal):
         # Initialize send_box first with a negative y value so that receive_box (which is
         # above send_box) can fill the terminal
         self.send_box = self.add(MultiLineEditBoxed, autowrap=False, max_height=5, rely=-7)
-        self.receive_box = self.add(npyscreen.Pager, values=[], rely=1, editable=False)
+        self.receive_box = self.add(npyscreen.Pager, values=[], rely=1,
+                                    max_height=self.curses_pad.getmaxyx()[0] - 7, editable=False)
 
     def on_ok(self):
         """When user presses Send, this function sends the command to the server."""
-        command = self.send_box.entry_widget.value
+        command = self.send_box.entry_widget.value.strip()
         if len(command) > BUFFER_SIZE:
             self.receive_box.values.append(
                 'Sorry, your text cannot be greater than {} characters long. Please try again.'
@@ -40,11 +41,11 @@ class ChatForm(npyscreen.ActionFormMinimal):
         self.send_box.entry_widget.value = ''
 
 
+
 class ChatApplication(npyscreen.NPSAppManaged):
     def onStart(self):
         """Entry point for our terminal UI"""
         self.addForm('MAIN', ChatForm, name='BastionBuds Chat App')
-
         # Kick off the thread that listens for messages from the server
         listen_thread = Thread(target=listen, args=[self.getForm('MAIN'), s], daemon=True)
         listen_thread.start()
@@ -58,20 +59,29 @@ class ChatApplication(npyscreen.NPSAppManaged):
 
 def listen(chatForm, s):
     """Takes a ChatForm and a socket, then listens for messages forever"""
-    while True:
-        data = s.recv(BUFFER_SIZE)
 
-        # this usually happens when the server disconnects
+    exit_message = "Server disconnected. Please use Ctrl + C to quit out."
+    while True:
+        try:
+            data = s.recv(BUFFER_SIZE)
+        except:
+            chatForm.receive_box.values.append(exit_message)
+            return
+
         if not data:
-            sys.exit(0)
+            chatForm.receive_box.values.append(exit_message)
+            return
 
         message = data.decode('utf-8')
-        if message == "\QUIT":
-            sys.exit(0)
+        if message == "/QUIT":
+            s.close()
+
+
 
         # display message to the user
         for line in message.splitlines():
             chatForm.receive_box.values.append(line)
+            chatForm.receive_box.h_show_end(line)
         # force the terminal UI to refresh
         chatForm.display()
 
