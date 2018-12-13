@@ -64,29 +64,23 @@ void *client_run(void *arg)
 
 
     int socket = user->getSocket();
-    cout<<"beginning of client_run"<<endl;
+    //cout<<"beginning of client_run"<<endl;
     while(1)
     {
         char* buf = new char[1024];
-        cout << "before receive" << endl;
+        //cout << "before receive" << endl;
         buf = receive(buf,socket);
-        cout << "after receive" << endl;
-        cout << commands.size() << endl;
+        //cout << "after receive" << endl;
+        //cout << commands.size() << endl;
         for(int i=0;i<commands.size();i++)
         {
-            cout<<"for loop"<< commands[i] << "  " << buf << endl;
             string strBuf = buf;
             if(commands[i]->matches(buf)) {
-                cout<<"for loop1"<<endl;
                 pthread_mutex_lock(&lock);
-                cout<<"for loop2"<<endl;
                 commands[i]->execute(buf,user);
-                cout<<"for loop3"<<endl;
                 pthread_mutex_unlock(&lock);
-                cout<<"for loop4"<<endl;
                 break;
             }
-            cout<<"for loop5"<<endl;
         }
     }
     return NULL;
