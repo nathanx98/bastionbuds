@@ -27,7 +27,7 @@ class ChatForm(npyscreen.ActionFormMinimal):
         # above send_box) can fill the terminal
         self.send_box = self.add(MultiLineEditBoxed, autowrap=False, max_height=5, rely=-7)
         self.receive_box = self.add(npyscreen.Pager, values=[], rely=1,
-                                    max_height=self.curses_pad.getmaxyx()[0] - 7, editable=False)
+                                    max_height=self.curses_pad.getmaxyx()[0] - 7, editable=False, autowrap=True)
 
     def on_ok(self):
         """When user presses Send, this function sends the command to the server."""
