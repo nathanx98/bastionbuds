@@ -12,6 +12,8 @@
 
 using namespace std;
 
+int BUFFER_SIZE = 4096;
+
 struct client_args{
     User *user;
     vector<Command*> commands;
@@ -26,7 +28,7 @@ char* receive(char* buffer,int socket)
 {
     int a = sizeof(buffer);
     memset(buffer,0,a);//reset the buffer
-    read(socket,buffer,1024);
+    read(socket,buffer,BUFFER_SIZE);
     return buffer;
 }
 
@@ -67,7 +69,7 @@ void *client_run(void *arg)
     //cout<<"beginning of client_run"<<endl;
     while(1)
     {
-        char* buf = new char[1024];
+        char* buf = new char[BUFFER_SIZE];
         //cout << "before receive" << endl;
         buf = receive(buf,socket);
         //cout << "after receive" << endl;
