@@ -23,7 +23,7 @@ private:
 public:
 
     string nickname;
-
+    //user constructor
     User(int sock) {
         socket = sock;
         nickname = "";
@@ -60,7 +60,10 @@ public:
         return socket;
     }
 
-
+    /*
+     *  @param   the message that needs to be sent to this user
+     *  @return  number of bytes sent, -1 if error sending message
+     */
     int transmit(char* message)
     {
         int output = send(socket,(char*)message,strlen(message),0);
@@ -85,7 +88,10 @@ public:
     }
 
 };
-
+    /*
+     *  This is the real fancy s**t and essence of our project
+     *  that let you play chess in a chat system!
+     */
 class ChessBoard {
 public:
     int board[8][8] = { {2, 3, 4, 5, 6, 4, 3, 2},
@@ -135,6 +141,11 @@ public:
         return returnString;
     }
 
+    /*
+     *  @param  currRow and currCol represent the current position.
+     *          destRow and destCol represent the destination
+     *          you're moving towards
+     */
 
     void movePiece(int currRow, int currCol, int destRow, int destCol){
         if((currRow <= 8 ) && (currCol <= 8 ) && (destRow <= 8 ) && (destCol <= 8 ) &&
@@ -144,6 +155,7 @@ public:
         }
     }
 
+    //resets the chessboard
     void resetBoard() {
         int newboard[8][8]={{2, 3, 4, 5, 6, 4, 3, 2},
                         {1, 1, 1, 1, 1, 1, 1, 1},
