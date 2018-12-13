@@ -250,6 +250,7 @@ public:
     void execute(string message, User *user) override {
         cout << "Excecuting Quit\n";
         //TODO
+        user->transmit("Goodbye!");
         return;
     }
 };
