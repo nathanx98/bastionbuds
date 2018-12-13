@@ -1,47 +1,110 @@
+import argparse
+import npyscreen
 import socket
+import sys
+import time
+
 from threading import Thread
 
 
 DEFAULT_IP = "127.0.0.1"
-DEFAULT_PORT = "9001"
+DEFAULT_PORT = 9001
+BUFFER_SIZE = 4096
 
 
-def listen(s):
-    """Takes a socket and listens for messages forever"""
+class MultiLineEditBoxed(npyscreen.BoxTitle):
+    """Wraps the editable text field inside a box to differentiate it from the chat log."""
+    _contained_widget = npyscreen.MultiLineEdit
+
+
+class ChatForm(npyscreen.ActionFormMinimal):
+
+    # Change the text of the default OK button
+    OK_BUTTON_TEXT = "Send"
+
+    def create(self):
+        # Initialize send_box first with a negative y value so that receive_box (which is
+        # above send_box) can fill the terminal
+        self.send_box = self.add(MultiLineEditBoxed, autowrap=False, max_height=5, rely=-7)
+        self.receive_box = self.add(npyscreen.Pager, values=[], rely=1, editable=False)
+
+    def on_ok(self):
+        """When user presses Send, this function sends the command to the server."""
+        command = self.send_box.entry_widget.value
+        if len(command) > BUFFER_SIZE:
+            self.receive_box.values.append(
+                'Sorry, your text cannot be greater than {} characters long. Please try again.'
+                .format(BUFFER_SIZE))
+        else:
+            s.send(command.encode())
+        self.send_box.entry_widget.value = ''
+
+
+class ChatApplication(npyscreen.NPSAppManaged):
+    def onStart(self):
+        """Entry point for our terminal UI"""
+        self.addForm('MAIN', ChatForm, name='BastionBuds Chat App')
+
+        # Kick off the thread that listens for messages from the server
+        listen_thread = Thread(target=listen, args=[self.getForm('MAIN'), s], daemon=True)
+        listen_thread.start()
+
+        # If there's a script, kick off a thread for that, too
+        global args
+        if args.script is not None:
+            script_thread = Thread(target=execute_script, args=[self.getForm('MAIN'), s, args.script], daemon=True)
+            script_thread.start()
+
+
+def listen(chatForm, s):
+    """Takes a ChatForm and a socket, then listens for messages forever"""
     while True:
-        data = s.recv(1024)
+        data = s.recv(BUFFER_SIZE)
+
+        # this usually happens when the server disconnects
         if not data:
-            return
+            sys.exit(0)
+
         message = data.decode('utf-8')
         if message == "\QUIT":
-            return
-        print(message)
+            sys.exit(0)
+
+        # display message to the user
+        for line in message.splitlines():
+            chatForm.receive_box.values.append(line)
+        # force the terminal UI to refresh
+        chatForm.display()
 
 
-def send(s):
-    """Takes a socket and sends messages forever"""
-    while True:
-        command = input()
-        if len(command) > 1024:
-            print('Command cannot be greater than 1024 characters long. Please try again.')
-            continue
-        s.send(command.encode())
+def execute_script(chatForm, s, script_fn):
+    """Given a ChatForm, a socket, and the filename of a script, this function executes the script"""
+    script = open(script_fn, 'r')
+
+    for line in script.readlines():
+        # Sleep a little to give time for UI to process and the like.
+        time.sleep(0.5)
+
+        if len(line) > BUFFER_SIZE:
+            chatForm.receive_box.values.append(
+                'Sorry, your text cannot be greater than {} characters long. Please try again.'
+                .format(BUFFER_SIZE))
+        else:
+            s.send(line.encode())
+
+    script.close()
 
 
-# Let user specify ip and port
-ip = input('Please enter the server IP Address (Default is {}): \n'.format(DEFAULT_IP))
-port = int(input('Please enter the server port (Default is {}):'.format(DEFAULT_PORT)))
+if __name__ == '__main__':
+    # Parse any options/arguments passed to the client
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--ip', default=DEFAULT_IP)
+    parser.add_argument('--port', type=int, default=DEFAULT_PORT)
+    parser.add_argument('--script', default=None)
 
+    args = parser.parse_args()
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((ip, port))
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((args.ip, args.port))
 
-
-# Spawn a listen thread and a send thread. Wait for both to join
-listen_thread = Thread(target=listen, args=[s], daemon=True)
-send_thread = Thread(target=send, args=[s], daemon=True)
-
-listen_thread.start()
-send_thread.start()
-
-listen_thread.join()
+    # Since this function blocks, everything else must be done in chatApp.onStart()
+    chatApp = ChatApplication().run()
