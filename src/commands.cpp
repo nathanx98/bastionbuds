@@ -51,31 +51,13 @@ public:
     }
     string commandSyntax = "/JOIN";
     bool matches(string message) override {
+        cout << "wow\n";
+        sleep(1);
         string firstWord = message.substr(0, message.find(" "));
         return (firstWord.compare(commandSyntax) == 0);
     }
     bool isValid(string message, User *user) override {
         //TODO: Raymond plz do regex, k thx
-        /*
-        string firstWord = message.substr(0, message.find(" "));
-        if (firstWord.length() >= (message.length())) {
-            cout << "1\n";
-            return false;
-        }
-        string secondWord = message.substr(message.find(" "), message.length());
-        string thirdWord = message.substr(message.find(" "), message.length());
-        thirdWord = message.substr(0, message.find(" "));
-        secondWord = secondWord.substr(0,message.find(" "));
-        if (secondWord.length() + firstWord.length() >= (message.length())) {
-            cout << "2\n";
-            return false;
-        }
-        if (secondWord.length() + firstWord.length() + thridWord >= (message.length())) {
-            cout << "3\n";
-            return false;
-        }
-        return ((secondWord.compare("") != 0 ) && (thirdWord.compare("") != 0 ));
-        */
         char* msg = new char[message.size()+1];   //message.size() or size+1?
         strcpy(msg,message.c_str());
         char* firstToken = strtok(msg," ");

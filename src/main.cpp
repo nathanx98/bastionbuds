@@ -19,7 +19,7 @@ struct client_args{
 
 
 vector<Room*> roomList;
-vector<Command*> commands;
+//vector<Command*> commands;
 pthread_mutex_t lock = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 
 char* receive(char* buffer,int socket)
@@ -42,8 +42,11 @@ int transmit(int socket,char* message)
 
 void *client_run(void *arg)
 {
+    cout << "1\n";
     cout<<"real beginning"<<endl;
+    cout << "2\n";
     struct client_args *args = (client_args*)arg;
+    cout << "3\n";
     User * user = args->user;
     vector<Command*> commands = args->commands;
     int socket = user->getSocket();
@@ -57,13 +60,19 @@ void *client_run(void *arg)
         cout << commands.size() << endl;
         for(int i=0;i<commands.size();i++)
         {
-            cout<<"for loop"<<endl;
+            cout<<"for loop"<< commands[i] << "  " << buf << endl;
+            string strBuf = buf;
             if(commands[i]->matches(buf)) {
+                cout<<"for loop1"<<endl;
                 pthread_mutex_lock(&lock);
+                cout<<"for loop2"<<endl;
                 commands[i]->execute(buf,user);
+                cout<<"for loop3"<<endl;
                 pthread_mutex_unlock(&lock);
+                cout<<"for loop4"<<endl;
                 break;
             }
+            cout<<"for loop5"<<endl;
         }
     }
     return NULL;
@@ -218,10 +227,10 @@ int main() {
         int rc;
         cout<<"before thread"<<endl;
         cout << commands.size() << endl;
-        struct client_args *args;
-        args->user = user;
-        args->commands = commands;
-        rc = pthread_create(&p1,NULL,client_run,args);
+        struct client_args args = {user, commands};
+        cout <<"a4\n";
+        rc = pthread_create(&p1,NULL,client_run,&args);
+        cout <<"a5\n";
         cout<<"after thread"<<endl;
     }
     return 0;
