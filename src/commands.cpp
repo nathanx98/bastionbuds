@@ -326,7 +326,7 @@ public:
         strcpy(msg,message.c_str());
         string firstToken = strtok(msg," ");
         string nickname = strtok(NULL," ");
-        string messageToSend = strtok(NULL," ");
+        string messageToSend = message.substr(nickname.length()+firstToken.length()+1, message.length());
         Room *room = user->getRoom();
         for (vector<User*>::iterator it = room->listOfUsers.begin(); it != room->listOfUsers.end(); it++) {
             if ((**it).getNickname() == nickname) {
