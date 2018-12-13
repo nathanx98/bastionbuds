@@ -27,7 +27,7 @@ class ChatForm(npyscreen.ActionFormMinimal):
         # above send_box) can fill the terminal
         self.send_box = self.add(MultiLineEditBoxed, autowrap=False, max_height=5, rely=-7)
         self.receive_box = self.add(npyscreen.Pager, values=[], rely=1,
-                                    max_height=self.curses_pad.getmaxyx()[0] - 8)
+                                    max_height=self.curses_pad.getmaxyx()[0] - 7, editable=False)
 
     def on_ok(self):
         """When user presses Send, this function sends the command to the server."""
@@ -59,16 +59,23 @@ class ChatApplication(npyscreen.NPSAppManaged):
 
 def listen(chatForm, s):
     """Takes a ChatForm and a socket, then listens for messages forever"""
-    while True:
-        data = s.recv(BUFFER_SIZE)
 
-        # this usually happens when the server disconnects
+    exit_message = "Server disconnected. Please use Ctrl + C to quit out."
+    while True:
+        try:
+            data = s.recv(BUFFER_SIZE)
+        except:
+            chatForm.receive_box.values.append(exit_message)
+            return
+
         if not data:
-            os._exit(0)
+            chatForm.receive_box.values.append(exit_message)
+            return
 
         message = data.decode('utf-8')
         if message == "/QUIT":
-            os._exit(0)
+            s.close()
+
 
 
         # display message to the user
