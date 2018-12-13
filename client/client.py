@@ -75,6 +75,8 @@ def listen(chatForm, s):
         message = data.decode('utf-8')
         if message == "/QUIT":
             s.close()
+            chatForm.receive_box.values.append(exit_message)
+            return
 
 
 
