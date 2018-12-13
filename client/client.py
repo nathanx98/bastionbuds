@@ -99,7 +99,7 @@ def execute_script(chatForm, s, script_fn):
                 'Sorry, your text cannot be greater than {} characters long. Please try again.'
                 .format(BUFFER_SIZE))
         else:
-            s.send(line.encode())
+            s.send(line.strip().encode())
 
     script.close()
 
